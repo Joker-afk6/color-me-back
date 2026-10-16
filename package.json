@@ -1,0 +1,28 @@
+{
+  "name": "color-me-back",
+  "version": "0.2.0",
+  "private": true,
+  "description": "COLOR ME BACK! — a 3D children's adventure game (TypeScript + Three.js + Vite).",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "dev": "vite --port 5310",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 5311",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@fontsource/fredoka": "5.3.0",
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "@types/three": "0.180.0",
+    "typescript": "5.9.3",
+    "vite": "6.4.4",
+    "vitest": "4.1.11"
+  }
+}

@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="theme-color" content="#20264a"/><title>Color Me Back! - Adventure Demo</title></head>
+<body>
+<div id="app">
+  <canvas id="game" aria-label="Three-dimensional Color Me Back adventure"></canvas>
+  <div id="hud" class="hidden">
+    <div class="hud-header"><div><strong id="level-name">Hush Hollow</strong><div id="objective" class="objective"></div></div><button id="help-btn" aria-label="Show game controls">?</button></div>
+    <div id="palette-progress" aria-label="Colors collected"></div>
+    <div class="hud-footer"><div id="interact-hint" aria-live="polite"></div><div id="ability-hint"></div></div>
+  </div>
+  <div id="dialogue" class="hidden" role="status" aria-live="polite"><strong id="speaker">Pip</strong><p id="dialogue-text"></p><button id="next-dialogue">Continue ↵</button></div>
+  <div id="toast" class="hidden" role="status"></div>
+  <div id="modal" class="modal"><div class="panel" id="modal-panel"></div></div>
+  <div id="controls" class="hidden"><button data-act="left" aria-label="Move left">◀</button><button data-act="up" aria-label="Move forward">▲</button><button data-act="down" aria-label="Move backward">▼</button><button data-act="right" aria-label="Move right">▶</button><button data-act="jump" aria-label="Jump">⤒</button><button data-act="interact" aria-label="Interact">✦</button></div>
+</div>
+<script type="module" src="/src/main.js"></script>
+</body></html>

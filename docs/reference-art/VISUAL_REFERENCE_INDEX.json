@@ -1,0 +1,68 @@
+[
+  {
+    "section": "Characters",
+    "name": "01_Girl_Explorer_FIXED",
+    "file": "characters/01_Girl_Explorer_FIXED.png",
+    "notes": "CORRECTED GIRL EXPLORER - fully visible grayscale outfit, equal powers and narrative status; original 2D reference."
+  },
+  {
+    "section": "Characters",
+    "name": "02_Boy_Explorer",
+    "file": "characters/02_Boy_Explorer.png",
+    "notes": "BOY EXPLORER - equal player controls and story; matching art direction for 3D modeling."
+  },
+  {
+    "section": "Kingdoms and Powers",
+    "name": "01_village",
+    "file": "worlds/01_village.png",
+    "notes": "PROLOGUE - Hush Hollow; a beautiful muted village awaiting recovered colors."
+  },
+  {
+    "section": "Kingdoms and Powers",
+    "name": "02_red",
+    "file": "worlds/02_red.png",
+    "notes": "CHAPTER 1 - Ruby Orchard and the friendly trapped dragon; RED restoration."
+  },
+  {
+    "section": "Kingdoms and Powers",
+    "name": "03_blue",
+    "file": "worlds/03_blue.png",
+    "notes": "CHAPTER 2 - Whisperwave Bay and octopus Bloop; BLUE restoration."
+  },
+  {
+    "section": "Kingdoms and Powers",
+    "name": "04_yellow",
+    "file": "worlds/04_yellow.png",
+    "notes": "CHAPTER 3 - Sunflower Skylands and sleepy sun Sol; YELLOW restoration."
+  },
+  {
+    "section": "Kingdoms and Powers",
+    "name": "05_purple",
+    "file": "worlds/05_purple.png",
+    "notes": "SECONDARY - PURPLE / Portal Hop, unlock through RED + BLUE."
+  },
+  {
+    "section": "Kingdoms and Powers",
+    "name": "06_orange",
+    "file": "worlds/06_orange.png",
+    "notes": "SECONDARY - ORANGE / Super Bounce, unlock through RED + YELLOW."
+  },
+  {
+    "section": "Kingdoms and Powers",
+    "name": "07_green",
+    "file": "worlds/07_green.png",
+    "notes": "SECONDARY - GREEN / Vine Grow, unlock through BLUE + YELLOW."
+  },
+  {
+    "section": "Kingdoms and Powers",
+    "name": "08_finale",
+    "file": "worlds/08_finale.png",
+    "notes": "BONUS FINALE - Prism Palace; nonviolent creative resolution."
+  },
+  {
+    "section": "Color Mixing",
+    "name": "01_Color_Combination_Board",
+    "file": "colors/01_Color_Combination_Board.png",
+    "notes": "Traditional PAINT mixing: Red + Blue = Purple, Red + Yellow = Orange, Blue + Yellow = Green."
+  }
+]

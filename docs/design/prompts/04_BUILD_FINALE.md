@@ -1,0 +1,3 @@
+# CLAUDE TASK - BUILD PRISM PALACE FINALE
+
+Read the master build instructions and `03_Story_and_Game_Design/04_Bonus_Finale_Prism_Palace_FULL_SCRIPT.md`. Build the final chapter with six distinct labeled prism stations, nonviolent Fade encounter, player-directed sky painting, Rainbow Playground reward, save behavior and replayability. Create real in-game painting rather than a slideshow or static image. Test with both explorers and deliberately missing secondary mixtures (players should be allowed to mix them here). Preserve all Chapters 1-3. Run syntax, build and full-route tests and clearly list anything still incomplete.

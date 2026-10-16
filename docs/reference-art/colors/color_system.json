@@ -1,0 +1,39 @@
+{
+  "primary": {
+    "red": "#EF4444",
+    "blue": "#3B82F6",
+    "yellow": "#FACC15"
+  },
+  "secondary": {
+    "purple": "#A855F7",
+    "orange": "#F97316",
+    "green": "#22C55E"
+  },
+  "mixes": [
+    {
+      "ingredients": [
+        "red",
+        "blue"
+      ],
+      "result": "purple",
+      "ability": "Portal Hop"
+    },
+    {
+      "ingredients": [
+        "red",
+        "yellow"
+      ],
+      "result": "orange",
+      "ability": "Super Bounce"
+    },
+    {
+      "ingredients": [
+        "blue",
+        "yellow"
+      ],
+      "result": "green",
+      "ability": "Vine Grow"
+    }
+  ],
+  "note": "Traditional paint-mixing teaching convention, not additive RGB light."
+}

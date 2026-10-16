@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1350" viewBox="0 0 1000 1350"><defs>
+  <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#f4f8fa"/><stop offset="1" stop-color="#d5e7f0"/></linearGradient>
+  <linearGradient id="face" x2="0.8" y2="1"><stop stop-color="#f8d5b0"/><stop offset="1" stop-color="#c98964"/></linearGradient>
+  <linearGradient id="shirt" x2="1" y2="1"><stop stop-color="#e3e8ec"/><stop offset="1" stop-color="#9ba8ae"/></linearGradient>
+  <linearGradient id="spark" x2="0" y2="1"><stop stop-color="#fffcd0"/><stop offset="1" stop-color="#ffd673"/></linearGradient>
+  <filter id="shadow"><feGaussianBlur stdDeviation="15"/></filter>
+ </defs><rect width="1000" height="1350" fill="url(#bg)"/>
+ <g opacity=".45"><circle cx="140.0" cy="216.0" r="85" fill="#fff"/><circle cx="820.0" cy="405.0" r="125" fill="#fff"/><circle cx="900.0" cy="972.0" r="65" fill="#fff"/></g><ellipse cx="490" cy="1150" rx="290" ry="53" fill="#304b60" opacity=".18" filter="url(#shadow)"/>
+ <g stroke="#6d8290" stroke-width="6" stroke-linejoin="round">
+ <path d="M356 690 Q322 760 350 894 L380 1025 Q416 1050 463 1014 L472 851 L502 856 L528 1025 Q584 1050 622 1015 L643 874 Q656 745 605 687 Z" fill="#788894"/>
+ <path d="M375 1004 Q360 1050 329 1070 Q318 1115 390 1124 L473 1118 Q491 1089 447 1044 L446 1004Z" fill="#f8fbff"/>
+ <path d="M531 1004 Q509 1070 524 1110 Q570 1137 659 1121 Q680 1088 610 1044 L600 1004Z" fill="#e8eff5"/>
+ <path d="M385 1108 L454 1111 M541 1110 L649 1110" stroke="#526675" stroke-width="9"/>
+ <rect x="342" y="610" width="310" height="260" rx="94" fill="url(#shirt)"/>
+ <path d="M355 671 Q283 695 277 788 Q277 838 320 862 L347 852 L383 700Z" fill="#c4d0d6"/>
+ <path d="M639 672 Q725 701 720 797 L682 865 L645 856 L613 707Z" fill="#c4d0d6"/>
+ <ellipse cx="315" cy="850" rx="36" ry="43" fill="url(#face)"/>
+ <ellipse cx="697" cy="853" rx="36" ry="43" fill="url(#face)"/>
+ <path d="M417 623 Q478 664 579 625 L558 671 Q498 705 449 673Z" fill="#f1f4f7"/>
+ <path d="M445 689 L478 741 L505 721 L531 744 L565 682" fill="none" stroke="#f9fcff" stroke-width="13" stroke-linecap="round"/>
+ <rect x="432" y="763" width="137" height="28" rx="14" fill="#a5b8c3"/>
+ <path d="M635 705 Q670 650 711 711 L748 785 L721 805 Q669 760 650 768" fill="#aebdc9"/>
+ <path d="M695 750 Q753 745 761 797" fill="none" stroke="#465e73" stroke-width="19" stroke-linecap="round"/>
+ <ellipse cx="500" cy="472" rx="191" ry="212" fill="url(#face)" stroke="#975b46" stroke-width="6"/>
+ <ellipse cx="311" cy="478" rx="29" ry="42" fill="url(#face)"/><ellipse cx="689" cy="479" rx="29" ry="42" fill="url(#face)"/>
+ <ellipse cx="425" cy="488" rx="18" ry="23" fill="#1f2d37" stroke="none"/><ellipse cx="573" cy="488" rx="18" ry="23" fill="#1f2d37" stroke="none"/>
+ <circle cx="430" cy="481" r="6" fill="#fff" stroke="none"/><circle cx="578" cy="481" r="6" fill="#fff" stroke="none"/>
+ <path d="M397 439 Q428 423 452 443 M552 442 Q575 420 603 440" fill="none" stroke="#4c3030" stroke-width="10" stroke-linecap="round"/>
+ <path d="M474 565 Q500 591 529 565" stroke="#773f42" fill="none" stroke-width="10" stroke-linecap="round"/>
+ <ellipse cx="375" cy="552" rx="34" ry="14" fill="#e5a6a0" stroke="none" opacity=".6"/><ellipse cx="625" cy="552" rx="34" ry="14" fill="#e5a6a0" stroke="none" opacity=".6"/>
+ </g><g fill="#322a31" stroke="#221d24" stroke-width="6"><path d="M307 454 Q268 365 324 289 Q338 221 413 207 Q489 177 547 199 Q641 192 683 272 Q739 343 690 469 L678 373 Q617 383 576 325 Q539 358 488 343 Q416 378 330 374Z"/><ellipse cx="344" cy="328" rx="55" ry="48"/><ellipse cx="420" cy="251" rx="66" ry="54"/><ellipse cx="516" cy="230" rx="74" ry="49"/><ellipse cx="611" cy="263" rx="72" ry="54"/></g><path d="M717 760 L786 860" stroke="#927a63" stroke-width="22" stroke-linecap="round"/><path d="M790 858 L824 910" stroke="#7caad9" stroke-width="30" stroke-linecap="round"/><path d="M822 912 L842 937" stroke="#ffe4ad" stroke-width="20" stroke-linecap="round"/><g opacity=".95"><path d="M815 615 l22 38 42 10-42 12-19 43-15-43-37-11 37-12Z" fill="#ffdf79"/><circle cx="230" cy="430" r="13" fill="#f5d390"/><circle cx="809" cy="330" r="10" fill="#ee859b"/></g><rect x="30" y="1183" width="940" height="126" rx="35" fill="#1d293b" opacity=".90"/><text x="500.0" y="1244" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-weight="bold" font-size="49" fill="white">BOY EXPLORER</text><text x="500.0" y="1282" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-size="22" fill="#dae7f3">Protagonist concept | same powers, same story</text></svg>

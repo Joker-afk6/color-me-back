@@ -1,0 +1,179 @@
+{
+  "title": "Color Me Back!",
+  "type": "chapter implementation specification, not compiled gameplay",
+  "chapters": [
+    {
+      "id": "ruby_orchard",
+      "chapter": 1,
+      "guardian": "Ruby the Rumble Dragon",
+      "restores": "red",
+      "ability": "crimson_dash",
+      "states": [
+        "arrive",
+        "orchard_traversal",
+        "stage_1",
+        "stage_2",
+        "stage_3",
+        "restore_red",
+        "dash_tutorial",
+        "complete"
+      ],
+      "stage_specs": [
+        {
+          "key": "stage_1",
+          "name": "Bouncing Berry Parade",
+          "category": "movement/dodge",
+          "objective": "avoid telegraphed soft berry landing circles and interact with exposed crystal",
+          "success": "gem_1_purified",
+          "on_miss": "bounce safely to checkpoint and slow telegraphs after three misses"
+        },
+        {
+          "key": "stage_2",
+          "name": "Mirror Berry Puzzle",
+          "category": "rotate beam mirrors",
+          "objective": "turn mirrors to route visible white beam to gem 2",
+          "success": "gem_2_purified",
+          "on_miss": "unlimited trial; optional solve hint; never randomized into unsolvable layout"
+        },
+        {
+          "key": "stage_3",
+          "name": "Friendly Dragon Dance",
+          "category": "pattern/timing",
+          "objective": "follow icon-marked slow stomps; climb safe platform, brush final crystal",
+          "success": "gem_3_purified",
+          "on_miss": "retry on next cycle, no progress lost"
+        }
+      ]
+    },
+    {
+      "id": "whisperwave_bay",
+      "chapter": 2,
+      "guardian": "Bloop the Ocean Octopus",
+      "restores": "blue",
+      "ability": "bubble_glide",
+      "states": [
+        "arrive",
+        "bay_traversal",
+        "stage_1",
+        "stage_2",
+        "stage_3",
+        "restore_blue",
+        "glide_tutorial",
+        "purple_mix_offer",
+        "complete"
+      ],
+      "stage_specs": [
+        {
+          "key": "stage_1",
+          "name": "Cloudy Bubble Matching",
+          "category": "symbol-matching",
+          "objective": "ride current and brush matching shell-symbol bubble",
+          "success": "bubble_1_freed",
+          "on_miss": "friendly chime and shape hint"
+        },
+        {
+          "key": "stage_2",
+          "name": "Waterway Maze",
+          "category": "route planning",
+          "objective": "rotate water-switch wheels to lead flow to spell bubble",
+          "success": "bubble_2_freed",
+          "on_miss": "undo freely or replay route; no countdown"
+        },
+        {
+          "key": "stage_3",
+          "name": "Ride the Giant Wave",
+          "category": "platform movement",
+          "objective": "use wave lift and assisted bubble ride to reach final bubble",
+          "success": "bubble_3_freed",
+          "on_miss": "respawn at wave start retaining prior stages"
+        }
+      ]
+    },
+    {
+      "id": "sunflower_skylands",
+      "chapter": 3,
+      "guardian": "Sol the Sleepy Sun",
+      "restores": "yellow",
+      "ability": "sunbeam",
+      "states": [
+        "arrive",
+        "mirror_garden",
+        "stage_1",
+        "stage_2",
+        "stage_3",
+        "restore_yellow",
+        "sunbeam_tutorial",
+        "secondary_mix_lab",
+        "complete"
+      ],
+      "stage_specs": [
+        {
+          "key": "stage_1",
+          "name": "First Glimmer",
+          "category": "mirror rotation",
+          "objective": "rotate first mirror to target sunflower receiver",
+          "success": "halo_1_lit",
+          "on_miss": "unlimited retries and beam preview"
+        },
+        {
+          "key": "stage_2",
+          "name": "Dancing Reflections",
+          "category": "beam chain",
+          "objective": "route two sequential numbered reflections",
+          "success": "halo_2_lit",
+          "on_miss": "restart beam at first mirror only"
+        },
+        {
+          "key": "stage_3",
+          "name": "Wake-Up Melody",
+          "category": "visible-pattern sequence",
+          "objective": "repeat sun/flower/star symbols, then aim final reflector",
+          "success": "halo_3_lit",
+          "on_miss": "replay visual sequence and keep earlier progress"
+        }
+      ]
+    }
+  ],
+  "color_rules": {
+    "primary": [
+      "red",
+      "blue",
+      "yellow"
+    ],
+    "secondary": [
+      {
+        "inputs": [
+          "red",
+          "blue"
+        ],
+        "output": "purple",
+        "ability": "portal_hop"
+      },
+      {
+        "inputs": [
+          "red",
+          "yellow"
+        ],
+        "output": "orange",
+        "ability": "super_bounce"
+      },
+      {
+        "inputs": [
+          "blue",
+          "yellow"
+        ],
+        "output": "green",
+        "ability": "vine_grow"
+      }
+    ],
+    "secondary_needs_explicit_mix": true,
+    "granted_primary_only_after_stage_3": true
+  },
+  "player_choices": [
+    "girl",
+    "boy"
+  ],
+  "identical_controls": true,
+  "progress_storage": "localStorage for starter; robust versioned migration needed for release",
+  "failure_policy": "nonviolent, no lost lives; each stage has safe retries, checkpoints, optional hints"
+}
