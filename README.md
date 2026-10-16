@@ -2,6 +2,8 @@
 
 A gentle third-person 3D adventure for children ages 5–10. The colors have vanished from the world (even from your clothes). With Pip the talking paintbrush, you rescue the Color Guardians, bring Red, Blue and Yellow home, and mix them into new colors.
 
+**Play it in your browser:** https://joker-afk6.github.io/color-me-back/ (desktop browser with keyboard recommended).
+
 **This build is playable from the Prologue through the end of Chapter 1, The Ruby Orchard.** Chapters 2–4 are planned in [`docs/ROADMAP.md`](docs/ROADMAP.md) and are not built yet. The game says so honestly wherever they would appear.
 
 Built with **TypeScript + Three.js r180 + Vite 6**. All 3D characters, places, music and sound effects are generated in code. No downloaded 3D models or audio files are used.
@@ -27,7 +29,7 @@ Then open **http://localhost:5310** in a desktop browser (tested in Chromium).
 | `npm run build` | Type check + production build into `dist/` |
 | `npm run preview` | Serve the production build (port 5311) |
 
-The production build uses relative paths, so `dist/` works from any static web host or sub-folder (for example GitHub Pages). Serve it over HTTP; opening `index.html` straight from the file system won't work because of browser module rules.
+The production build uses relative paths, so `dist/` works from any static web host or sub-folder. Every push to `main` runs the tests, builds, and publishes to GitHub Pages (`.github/workflows/deploy.yml`). Serve it over HTTP; opening `index.html` straight from the file system won't work because of browser module rules.
 
 ## Controls
 

@@ -2,6 +2,8 @@
 
 **Last updated:** 2026-10-16. **Current state:** milestones M1 (foundation) and M2 (Prologue + Chapter 1) are complete and tested. **Next:** M3 — Chapter 2, Whisperwave Bay.
 
+**Live build:** https://joker-afk6.github.io/color-me-back/. Source: https://github.com/Joker-afk6/color-me-back (public). Each push to `main` runs the tests and redeploys through GitHub Actions.
+
 ## Status at a glance
 | Milestone | State |
 |---|---|
