@@ -11,7 +11,7 @@ export type GameColor = PrimaryColor | SecondaryColor;
 /** Every paintable material belongs to exactly one key. `neutral` never changes (whites, skin, magic cues). */
 export type ColorKey = GameColor | 'neutral';
 
-export type AbilityId = 'crimsonDash' | 'bubbleGlide' | 'sunbeam' | 'portalHop' | 'superBounce' | 'vineGrow';
+export type AbilityId = 'basicDash' | 'flameBurst' | 'bubbleGlide' | 'sunbeam' | 'portalHop' | 'superBounce' | 'vineGrow';
 
 /** Shape symbols guarantee no puzzle or menu depends on hue discrimination alone. */
 export type ColorSymbol = 'apple' | 'wave' | 'sun' | 'spiral' | 'spring' | 'leaf';
@@ -22,6 +22,7 @@ export interface ColorInfo {
   hex: string;
   kind: 'primary' | 'secondary';
   symbol: ColorSymbol;
+  /** The power this color's Guardian grants (Ch1: Flame Burst, provisional canon CC-01). */
   ability: AbilityId;
   /** Short spoken/printed description used by UI and read-aloud. */
   phrase: string;
@@ -32,7 +33,7 @@ export const SECONDARY_COLORS: readonly SecondaryColor[] = ['purple', 'orange', 
 export const ALL_COLORS: readonly GameColor[] = [...PRIMARY_COLORS, ...SECONDARY_COLORS];
 
 export const COLOR_INFO: Readonly<Record<GameColor, ColorInfo>> = Object.freeze({
-  red: { id: 'red', label: 'Red', hex: '#EF4444', kind: 'primary', symbol: 'apple', ability: 'crimsonDash', phrase: 'Red, like an apple' },
+  red: { id: 'red', label: 'Red', hex: '#EF4444', kind: 'primary', symbol: 'apple', ability: 'flameBurst', phrase: 'Red, like an apple' },
   blue: { id: 'blue', label: 'Blue', hex: '#3B82F6', kind: 'primary', symbol: 'wave', ability: 'bubbleGlide', phrase: 'Blue, like a wave' },
   yellow: { id: 'yellow', label: 'Yellow', hex: '#FACC15', kind: 'primary', symbol: 'sun', ability: 'sunbeam', phrase: 'Yellow, like the sun' },
   purple: { id: 'purple', label: 'Purple', hex: '#A855F7', kind: 'secondary', symbol: 'spiral', ability: 'portalHop', phrase: 'Purple, like a magic spiral' },

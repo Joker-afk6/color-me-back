@@ -5,7 +5,8 @@
  * Rules enforced here (Design Bible §4, §9; chapter scripts; blueprints JSON):
  *  - A primary color is awarded only by completing its Guardian's Stage 3, and only once.
  *  - Secondary colors unlock only through an explicit mix of two owned primaries; order-independent.
- *  - Abilities derive from owned colors (no separate unlock flags).
+ *  - Abilities derive from story progress (no separate unlock flags). Basic Dash is free from the
+ *    start; Ruby's Red grants Flame Burst (canon CC-01, provisional).
  *  - Stages advance strictly in order; a stage cannot be skipped.
  */
 import { ABILITIES } from '../data/abilities';
@@ -14,6 +15,7 @@ import { mixResult } from '../data/colors';
 import type { LocationId } from '../data/chapters';
 import {
   BEDROOM_INSPECTABLES,
+  PRACTICE_MOVES,
   STICKERS,
   TRAVERSAL_CHECKPOINTS,
   VILLAGE_STARS,
@@ -21,6 +23,7 @@ import {
   prologueAtLeast,
   type BedroomInspectable,
   type MirrorState,
+  type PracticeMove,
   type SaveData,
   type StickerId,
   type TraversalCheckpoint,
@@ -30,7 +33,10 @@ import {
 const clone = (s: SaveData): SaveData => structuredClone(s);
 
 export const hasColor = (s: SaveData, c: GameColor): boolean => s.colors[c] === true;
-export const hasAbility = (s: SaveData, a: AbilityId): boolean => hasColor(s, ABILITIES[a].color);
+export const hasAbility = (s: SaveData, a: AbilityId): boolean => {
+  const color = ABILITIES[a].color;
+  return color === null || hasColor(s, color);
+};
 export const ownedPrimaries = (s: SaveData): PrimaryColor[] => (['red', 'blue', 'yellow'] as const).filter((c) => s.colors[c]);
 
 // ───────────────────────────── Prologue ─────────────────────────────
@@ -42,13 +48,16 @@ export function finishOpening(s: SaveData): SaveData {
   return n;
 }
 
-/** P1: inspect in any order; after two, Pip appears (phase → wonderbrush). The third stays optional. */
+/**
+ * P01: inspect in any order. The WINDOW is where Pip taps the glass (Director Script P01,
+ * interaction 3), so inspecting it brings Pip in (phase → wonderbrush). Teddy and crayons are optional.
+ */
 export function inspectBedroomObject(s: SaveData, id: BedroomInspectable): { save: SaveData; pipArrives: boolean } {
-  if (!BEDROOM_INSPECTABLES.includes(id) || s.prologue.inspected.includes(id)) return { save: s, pipArrives: false };
+  if (s.prologue.phase === 'opening' || !BEDROOM_INSPECTABLES.includes(id) || s.prologue.inspected.includes(id)) return { save: s, pipArrives: false };
   const n = clone(s);
   n.prologue.inspected.push(id);
   let pipArrives = false;
-  if (n.prologue.phase === 'inspect' && n.prologue.inspected.length >= 2) {
+  if (n.prologue.phase === 'inspect' && id === 'window') {
     n.prologue.phase = 'wonderbrush';
     pipArrives = true;
   }
@@ -62,16 +71,8 @@ export function takeWonderbrush(s: SaveData): SaveData {
   return n;
 }
 
-/** P2: the sleepy star pulses with a local gray sparkle. It does NOT restore any color. */
-export function wakeBedroomStar(s: SaveData): SaveData {
-  if (s.prologue.phase !== 'wonderbrush' || !s.prologue.hasWonderbrush || s.prologue.bedroomStarAwake) return s;
-  const n = clone(s);
-  n.prologue.bedroomStarAwake = true;
-  return n;
-}
-
-export const canLeaveBedroom = (s: SaveData): boolean =>
-  s.prologue.phase === 'wonderbrush' && s.prologue.hasWonderbrush && s.prologue.bedroomStarAwake;
+/** Picking up the Wonderbrush is checkpoint `prologue_bedroom_complete`; the door then opens. */
+export const canLeaveBedroom = (s: SaveData): boolean => s.prologue.phase === 'wonderbrush' && s.prologue.hasWonderbrush;
 
 export function leaveBedroom(s: SaveData): SaveData {
   if (!canLeaveBedroom(s)) return s;
@@ -86,6 +87,14 @@ export function wakeVillageStar(s: SaveData, id: VillageStar): SaveData {
   if (s.prologue.phase !== 'village' || !VILLAGE_STARS.includes(id) || s.prologue.villageStars.includes(id)) return s;
   const n = clone(s);
   n.prologue.villageStars.push(id);
+  return n;
+}
+
+/** P02 Tutorial A: remember that a move was practiced (only in Hush Hollow, only once). */
+export function markPracticed(s: SaveData, move: PracticeMove): SaveData {
+  if (s.prologue.phase !== 'village' || !PRACTICE_MOVES.includes(move) || s.prologue.practiced.includes(move)) return s;
+  const n = clone(s);
+  n.prologue.practiced.push(move);
   return n;
 }
 
@@ -143,7 +152,7 @@ export interface StageResult {
 
 /**
  * Complete Ruby's rescue stage `stage`. Rejected unless it is the current stage.
- * Stage 3 awards RED exactly once (and with it, Crimson Dash).
+ * Stage 3 awards RED exactly once (and with it, Flame Burst — canon CC-01; the power itself is R09).
  */
 export function completeRubyStage(s: SaveData, stage: 1 | 2 | 3): StageResult {
   if (s.ruby.phase !== `stage${stage}`) return { save: s, accepted: false, awarded: null };

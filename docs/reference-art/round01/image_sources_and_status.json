@@ -1,0 +1,182 @@
+[
+  {
+    "filename": "01_Boy_Explorer_Concept.png",
+    "source_board": "02_Cast_and_World_Board.png",
+    "crop_xyxy": [
+      8,
+      157,
+      442,
+      627
+    ],
+    "status": "PROPOSAL / NOT APPROVED",
+    "note": "Concept illustration extracted from overview board; not rigged in-game asset."
+  },
+  {
+    "filename": "02_Girl_Explorer_Concept.png",
+    "source_board": "02_Cast_and_World_Board.png",
+    "crop_xyxy": [
+      444,
+      157,
+      882,
+      627
+    ],
+    "status": "PROPOSAL / NOT APPROVED",
+    "note": "Concept illustration extracted from overview board; not rigged in-game asset."
+  },
+  {
+    "filename": "03_Pip_Magical_Brush_Concept.png",
+    "source_board": "02_Cast_and_World_Board.png",
+    "crop_xyxy": [
+      885,
+      157,
+      1174,
+      627
+    ],
+    "status": "PROPOSAL / NOT APPROVED",
+    "note": "Concept illustration extracted from overview board; not rigged in-game asset."
+  },
+  {
+    "filename": "04_Ruby_Friendly_Dragon_Concept.png",
+    "source_board": "02_Cast_and_World_Board.png",
+    "crop_xyxy": [
+      1178,
+      157,
+      1532,
+      627
+    ],
+    "status": "PROPOSAL / NOT APPROVED",
+    "note": "Concept illustration extracted from overview board; not rigged in-game asset."
+  },
+  {
+    "filename": "05_Boy_Explorer_Turnaround.png",
+    "source_board": "03_Character_and_Environments_Board.png",
+    "crop_xyxy": [
+      525,
+      152,
+      859,
+      498
+    ],
+    "status": "PROPOSAL / NOT APPROVED",
+    "note": "Concept illustration extracted from overview board; not rigged in-game asset."
+  },
+  {
+    "filename": "06_Girl_Explorer_Turnaround.png",
+    "source_board": "03_Character_and_Environments_Board.png",
+    "crop_xyxy": [
+      862,
+      151,
+      1175,
+      498
+    ],
+    "status": "PROPOSAL / NOT APPROVED",
+    "note": "Concept illustration extracted from overview board; not rigged in-game asset."
+  },
+  {
+    "filename": "07_Ruby_Dragon_Poses.png",
+    "source_board": "01_Cinematic_World_Board.png",
+    "crop_xyxy": [
+      1164,
+      465,
+      1532,
+      627
+    ],
+    "status": "PROPOSAL / NOT APPROVED",
+    "note": "Concept illustration extracted from overview board; not rigged in-game asset."
+  },
+  {
+    "filename": "08_Gray_Bedroom_Environment.png",
+    "source_board": "03_Character_and_Environments_Board.png",
+    "crop_xyxy": [
+      0,
+      501,
+      289,
+      753
+    ],
+    "status": "PROPOSAL / NOT APPROVED",
+    "note": "Concept illustration extracted from overview board; not rigged in-game asset."
+  },
+  {
+    "filename": "09_Gray_Hush_Hollow_Environment.png",
+    "source_board": "03_Character_and_Environments_Board.png",
+    "crop_xyxy": [
+      298,
+      501,
+      680,
+      753
+    ],
+    "status": "PROPOSAL / NOT APPROVED",
+    "note": "Concept illustration extracted from overview board; not rigged in-game asset."
+  },
+  {
+    "filename": "10_Ruby_Orchard_Restored_Mood.png",
+    "source_board": "03_Character_and_Environments_Board.png",
+    "crop_xyxy": [
+      686,
+      501,
+      952,
+      753
+    ],
+    "status": "PROPOSAL / NOT APPROVED",
+    "note": "Concept illustration extracted from overview board; not rigged in-game asset."
+  },
+  {
+    "filename": "11_JamJar_Jester_Concept.png",
+    "source_board": "03_Character_and_Environments_Board.png",
+    "crop_xyxy": [
+      965,
+      501,
+      1257,
+      753
+    ],
+    "status": "PROPOSAL / NOT APPROVED",
+    "note": "Concept illustration extracted from overview board; not rigged in-game asset."
+  },
+  {
+    "filename": "12_Ruby_Sanctuary_Concept.png",
+    "source_board": "03_Character_and_Environments_Board.png",
+    "crop_xyxy": [
+      1259,
+      501,
+      1535,
+      753
+    ],
+    "status": "PROPOSAL / NOT APPROVED",
+    "note": "Concept illustration extracted from overview board; not rigged in-game asset."
+  },
+  {
+    "filename": "13_Before_After_World_Comparison.png",
+    "source_board": "01_Cinematic_World_Board.png",
+    "crop_xyxy": [
+      0,
+      644,
+      1235,
+      889
+    ],
+    "status": "PROPOSAL / NOT APPROVED",
+    "note": "Concept illustration extracted from overview board; not rigged in-game asset."
+  },
+  {
+    "filename": "14_Chapter_1_Swatch_Reference.png",
+    "source_board": "02_Cast_and_World_Board.png",
+    "crop_xyxy": [
+      0,
+      774,
+      520,
+      1024
+    ],
+    "status": "PROPOSAL / NOT APPROVED",
+    "note": "Concept illustration extracted from overview board; not rigged in-game asset."
+  },
+  {
+    "filename": "15_Ruby_Orchard_Wide_Mood.png",
+    "source_board": "01_Cinematic_World_Board.png",
+    "crop_xyxy": [
+      0,
+      0,
+      777,
+      462
+    ],
+    "status": "PROPOSAL / NOT APPROVED",
+    "note": "Concept illustration extracted from overview board; not rigged in-game asset."
+  }
+]

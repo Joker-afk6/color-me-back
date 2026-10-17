@@ -1,12 +1,15 @@
 /**
  * Geometry solvability: uses the real CharacterMotor and the shared Ruby Orchard layout numbers
  * (src/chapters/ruby/layout.ts) to prove every required jump is possible with the explorer's
- * tuning, and that the dash test really needs Crimson Dash.
+ * tuning, that the orchard dash lane really needs the Dash, and that Hush Hollow's Tutorial A
+ * (0.7 m brook, dash stripe) is safe and works.
  */
 import { describe, expect, it } from 'vitest';
 import { PhysicsWorld } from '../src/systems/physics';
 import { CharacterMotor, type MotorInput } from '../src/systems/CharacterMotor';
 import { ORCH } from '../src/chapters/ruby/layout';
+import { BROOK, DASH_STRIPE } from '../src/environments/hushHollowLayout';
+import { EXPLORER_TUNING } from '../src/systems/CharacterMotor';
 
 const idle: MotorInput = { moveX: 0, moveZ: 0, jumpPressed: false, jumpHeld: false, dashPressed: false };
 
@@ -51,7 +54,7 @@ describe('Ruby Orchard berry trail', () => {
   });
 });
 
-describe('Crimson Dash test lane', () => {
+describe('Orchard dash test lane', () => {
   const laneWorld = () => {
     const w = new PhysicsWorld();
     const L = ORCH.lane;
@@ -123,5 +126,58 @@ describe('Ruby Stage 3 berry platforms and the village terrace', () => {
     for (let i = 0; i < 10; i++) m.step(1 / 60, idle);
     const b = runJump(m, 'x', 6.9, false);
     expect(b.landedY).toBeCloseTo(1.1);
+  });
+});
+
+describe('Hush Hollow Tutorial A (Director Script P02)', () => {
+  /** The same colliders HushHollowLevel builds around the brook. */
+  const hollow = () => {
+    const w = new PhysicsWorld();
+    const zN = BROOK.z - BROOK.width / 2;
+    const zS = BROOK.z + BROOK.width / 2;
+    w.box(0, (-49 + zN) / 2, 90, zN + 49, -2, 0);
+    w.box(0, (zS + 41) / 2, 90, 41 - zS, -2, 0);
+    w.box((-45 + BROOK.x0) / 2, BROOK.z, BROOK.x0 + 45, BROOK.width, -2, 0);
+    w.box((BROOK.x1 + 45) / 2, BROOK.z, 45 - BROOK.x1, BROOK.width, -2, 0);
+    w.box((BROOK.x0 + BROOK.x1) / 2, BROOK.z, BROOK.x1 - BROOK.x0, BROOK.width, -2, BROOK.floorY, { hazard: true, safe: false });
+    return w;
+  };
+
+  it('the brook is the scripted 0.7 m gap', () => {
+    expect(BROOK.width).toBeCloseTo(0.7);
+  });
+
+  it('a running hop clears the brook safely (from either a late or an early takeoff)', () => {
+    for (const early of [0.2, 1.2]) {
+      const m = new CharacterMotor(hollow());
+      m.teleport(-2.3, 0, 10);
+      const r = runJump(m, '-z', -(BROOK.z + BROOK.width / 2 + early), false);
+      expect(r.hazard).toBe(false);
+      expect(r.landedY).toBeCloseTo(0);
+      expect(r.landedAt).toBeLessThan(BROOK.z - BROOK.width / 2);
+    }
+  });
+
+  it('walking across without hopping can never drop the child into the water', () => {
+    const m = new CharacterMotor(hollow());
+    m.teleport(-2.3, 0, 9);
+    let hazard = false;
+    for (let i = 0; i < 3 * 60; i++) hazard ||= m.step(1 / 60, { ...idle, moveZ: -1 }).some((e) => e.type === 'hazard' || e.type === 'fell');
+    expect(hazard).toBe(false);
+    expect(m.pos.y).toBeCloseTo(0, 1);
+    expect(m.pos.z).toBeLessThan(BROOK.z - 2);
+  });
+
+  it('a grounded Basic Dash from the start of the stripe stays on the stripe', () => {
+    const dashLen = EXPLORER_TUNING.dashSpeed * EXPLORER_TUNING.dashTime;
+    expect(DASH_STRIPE.z0 - DASH_STRIPE.z1).toBeGreaterThan(dashLen + 2);
+    const m = new CharacterMotor(hollow());
+    m.dashAllowed = true; // Basic Dash is owned from a new game (tested in progression.test.ts)
+    m.teleport(DASH_STRIPE.x, 0, DASH_STRIPE.z0);
+    m.step(1 / 60, { ...idle, moveZ: -1, dashPressed: true });
+    expect(m.dashActive).toBe(true);
+    for (let i = 0; i < 40; i++) m.step(1 / 60, { ...idle, moveZ: -1 });
+    expect(m.pos.z).toBeGreaterThan(DASH_STRIPE.z1);
+    expect(m.pos.z).toBeLessThan(DASH_STRIPE.z0 - dashLen * 0.8);
   });
 });

@@ -1,0 +1,1053 @@
+
+===== PAGE 1 =====
+COLOR ME BACK! — CHAPTER 1: THE
+RUBY ORCHARD
+Detailed narrative, gameplay, cinematic and
+implementation script | Beta production draft v1.0
+Document status: DRAFT FOR CREATOR REVIEW. Source: Color Me Back | Expanded Game
+Development Bible, dated 16 October 2026, with comparison to the earlier three-page Chapter 1
+brief and existing starter-code README. New technical targets and connective dialogue below are
+original PROPOSALS, not approved canon, shipped features or completed assets.
+Playable goal: A polished, coherent single-player, third-person 3D beta that tells a beginning-to-
+end Ruby rescue story, from the child's colorless bedroom to the first spectacular restoration. Beta
+duration: about 20–30 minutes depending on exploration and retries. Future complete Chapter
+1: 55–80 minutes main path plus 20–35 minutes optional, as proposed on page 8 of the expanded
+Bible. These are planning targets, not measured timings.
+Premise: Ruby is a gentle dragon caught in a spell that magnifies fear of making mistakes. Her
+uncontrolled berry magic makes her orchard unsafe. The child helps her be brave enough to try
+again. Emotional theme: Courage without perfection. No one is attacked to cause injury: the
+goal is to break the three imprisoning crystals. The child can make mistakes and still succeed.
+A. Canon and proposal register — read before coding
+Topic Earlier handoff Expanded Bible (16 Oct 2026) Chapter 1 beta assumption
+Red Guardian Ruby the Rumble
+Dragon
+Keep Ruby, with clumsy fear-amplifying seal KEEP
+Color
+progression
+Red -> Blue ->
+Yellow; later mixes
+Seven Lords proposed, but RED/BLUE/YELLOW
+remain only primary paint supplies
+Red only in this beta; later chapter
+flags reserved
+Dash Crimson Dash
+unlocked after
+Ruby
+Basic dash in prologue; Flame Burst after
+Ruby
+PROVISIONALLY follow expanded
+version, creator sign-off pending
+Boss design Three gentle
+phases
+Three phases, threats continue during puzzle
+solving, generous checkpoints
+Follow expanded version
+Main-story
+scope
+Short ~18–25-
+minute demo
+Ruby full chapter 55–80 minutes plus optional
+content
+Build ~20–30-minute core beta, then
+extend without replacing systems
+Art Earlier reference
+images
+Older posters are mood boards, not approved
+playable 3D assets; chubby/cute/toy-like is
+proposed target
+Build original childlike art pass and
+approval tests
+Season Two Possible co-op Season One SOLO; co-op later only Solo only
+Approval gate: Confirm Flame Burst versus Crimson Dash and the larger seven-Lord storyline
+BEFORE treating this as locked production canon. The beta can use Flame Burst provisionally
+without rewriting old documents or save data irreversibly.
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 1
+===== PAGE 2 =====
+B. The ten golden rules — mandatory, not optional
+1.
+2.
+3.
+4.
+5.
+6.
+7.
+8.
+9.
+10.
+No pay-to-win. Full story, all Lord powers, all standard pets and every functional traversal
+ability must be earnable free.
+Seven shades included. Buying one legendary pet cosmetic includes seven freely
+selectable color palettes; never sell its palette colors separately.
+A real free path to one premium cosmetic. The proposed 600-Gem legendary skin must
+be obtainable by a reasonably achievable, permanent F2P path. The full Bible models an
+early 660-Gem pathway; DO NOT implement real purchases in this beta.
+Childlike 3D heroes. Young-looking, chubby/cute, rounded and soft-edged; neither adult
+realism nor glossy anime portraits.
+Legendary means cosmetic spectacle. Redesigned silhouette, outfit, motions and VFX
+can be much richer but must match the world's material language and NEVER improve
+gameplay statistics.
+Bosses keep moving. In default Adventure mode, readable attacks continue while the child
+rotates mirrors, paints symbols or solves puzzles; choose Story assist for gentle pacing or
+hazard pause.
+Teach then reuse. Every new mechanic has an obvious tutorial, an easy test, a combination
+test and later mastery use. Double jump and grappling recur in future chapters, not earned
+here.
+Rescue, do not injure. Color Lords are spell victims, not villains. The Fade is helped, not
+killed.
+Solo first. Season One is a solo adventure; optional co-op, hard rematches and miniature
+Lord pets belong only to possible Season Two.
+Creator approves. Concept art, numbers, prices, calendars and added worldbuilding are
+proposals until explicitly approved.
+Additional constraints: Inclusive natural skin tones stay natural when scenery is grayscale; text
++ distinct symbols accompany color; save checkpoints; subtitles; no public child chat, photos, ad
+tracking, or shop in beta.
+C. The opening promise — what the player should feel
+•
+•
+•
+•
+•
+•
+In the bedroom: curiosity and a small mystery, never horror.
+With Pip: warmth, humor, safety and companionship.
+On first sight of Ruby: a large magical spectacle, but Ruby is visibly frightened rather than
+threatening.
+During the orchard: constantly changing scale and tactile, readable 3D interactions; giant
+berries, slippery jam, wobbly bridges, mirrored rays.
+During the boss: exhilaration from movement and puzzle timing. The player is rescuing
+someone while the environment misbehaves.
+At the restoration: a unique, emotionally satisfying payoff with permanently changed 3D
+scenery, music and clothing details.
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 2
+===== PAGE 3 =====
+D. Scene ledger, pacing and checkpoints
+Scene
+ID Location Beta goal Approx.
+mins Save event
+P00 Start and child-select Pick either Explorer, same gameplay stats 1–2 selection
+P01 Bedroom Notice missing colors, find Pip 2–3 bedroom done
+P02 Hush Hollow courtyard Wonderbrush tap, movement, jump, basic
+dash
+3–4 berry arch reached
+R01 Orchard Arrival / overlook Meet Ruby; establish three spell crystals 1–2 orchard entry
+R02 Berry Trail / stepping
+stones
+Move and dodge; learn rolling-fruit tells 3–4 trail cleared
+R03 Reversible mirror garden Activate one mirror without hazard 2–3 mirror done
+R04 Jam-Jar Stage Resolve the Jam-Jar Jester's three-pot
+puzzle
+3–4 mini-boss clear
+R05 Ruby arena, Phase A Berry Parade + first crystal 2–3 ruby_phase_1
+R06 Ruby arena, Phase B Three Mirrors, Many Berries 3–4 ruby_phase_2
+R07 Ruby arena, Phase C Three stomp waves + final crystal 2–3 ruby_phase_3
+R08 Restoration cinematic Red returns dynamically across orchard ~1 ruby_restored
+R09 Flame Courtyard Receive dye and learn Flame Burst 2–3 power_test_complete
+R10 Return to Hush Hollow Ruby closure and tease Whisperwave Bay 1 chapter_1_complete
+Pacing note: scene lengths overlap with retries/cutscenes, so the beta target is approximately 20–
+30 minutes overall, not a strict sum of every row. Shorten idle transitions, not important gameplay.
+All scenes have a no-softlock exit and a fast-forward option for previously seen cinematics.
+E. FULL PLAYABLE STORY SCRIPT
+P00 — THE FIRST BRUSHSTROKE | Title and character choice
+Visual: Dim yet beautiful painted-paper storybook title, almost monochrome; three empty primary-
+color sockets arranged around a rounded Wonderbrush silhouette. Soft motes float slowly. Subtle,
+not flashing.
+UI: START ADVENTURE, CONTINUE (if save exists), SETTINGS, HOW TO PLAY. Character select: Boy
+Explorer / Girl Explorer, identical stats, same scale and basic rig, inclusive starter choices. No real-
+name field required; a fixed in-game nickname can be used offline. Three freely available opening
+outfits in full game; beta may show one polished outfit per preset if it clearly does not falsely claim
+full customization.
+Player input: choice + confirmation; accessible focus cues; previous save warning only when
+genuinely overwriting data.
+Audio: One music-box note; distant wind-chime. No startling bass drop.
+QA: Both choices reach identical starting coordinates; equal movement speed/jump/collision/skills;
+no gender-dependent dialogue or rewards.
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 3
+===== PAGE 4 =====
+P01 — THE MORNING THE COLORS DISAPPEARED | Bedroom cutscene
++ micro-exploration
+Weather/time: Soft clouded midmorning. Outside the bedroom window, low pearly fog drifting
+between toy-shaped roofs; a weak patch of sunlight creates gentle shadows but does not imply
+yellow was restored.
+Camera C01: Close on the child's hand holding a painted drawing of a big berry, curling wave and
+small sun. Pigment quietly streams out of the page. C02: Camera pulls across a teddy, crayon box,
+curtain and drawing as each loses its color. C03: Wide of the bedroom window; rooflines are
+desaturated. C04: Mirror close-up: the outfit's decorative trim is gray; child's natural skin tone
+remains natural. Camera never stares at blank gray for long: warm form/lighting make it beautiful.
+Narrator (optional voice/subtitles): “One morning, Hush Hollow forgot how to shine. Not how to
+laugh. Not how to dream. Just how to be colorful.”
+EXPLORER: “Wait... where did my red crayon go?”
+Interaction 1, TEDDY: A soft squeeze; gentle squeak; prompt “Inspect — E”. EXPLORER: “You
+look a little sleepy, too.”
+Interaction 2, CRAYON BOX: One empty outline of each primary color; hints show label + fruit/
+wave/sun symbol. EXPLORER: “The pictures are still here, but their colors aren't!”
+Interaction 3, WINDOW: Slow look out to Hush Hollow; a tiny levitating brush taps the glass.
+PIP (tiny voice from outside): “Psst! If you're looking for colors, I'm very good at looking!”
+EXPLORER: “Who said that?”
+PIP (drops into the room, lands bristle-first, spins upright): “Pip! Paintbrush, guide, professional
+finder of almost everything.”
+EXPLORER: “Then can you find my color?”
+PIP: “I think we can find everybody's. But first... would you help me wake this old Wonderbrush?”
+Cutscene blend: Pip rises, musical sparkle, control returns; arrows point to the paintbrush in its
+cradle. Do not create an unskippable 90-second cinema before the player has agency.
+Checkpoint: prologue_bedroom_complete after pickup. Assist: an icon pulses after 20 seconds, Pip
+gives a hint after 35 seconds. Camera: smooth shoulder-height third-person on control handoff.
+P02 — HUSH HOLLOW: THE TWO SLEEPING STARS | Core controls,
+brush and dash
+Environment: Small village square: rounded doors, hand-painted plaster, felt awnings, broad
+paving stones, birdhouses, oversized craft props, muted grayscale with natural accents. Branches
+and fabrics move in a slow breeze. An orchard arch is visible across square.
+Tutorial A: Move WASD/arrow keys; camera mouse drag; jump SPACE across a safe 0.7-meter
+visual gap; practice basic dash (Shift) across a broad courtyard stripe. A short glow trail follows
+dash, but red stays locked. No fall penalties beyond instant ledge reset.
+PIP: “Take a little step. Now a hop! Your feet already remember how to be brave.”
+Tutorial B: Look at first sleepy star, E / contextual Wonderbrush tap. Glow travels along engraved
+lines and awakens the star with a white-gold accessibility glint (not restoring yellow pigment).
+EXPLORER: “That wasn't so hard!”
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 4
+===== PAGE 5 =====
+PIP: “Excellent! A real artist always tries more than one brushstroke.”
+Tutorial C: Second star requires moving, jumping and a brush tap. Large star-shaped reticle; no
+precise dragging.
+PIP: “See those berry stamps on the road? They lead to someone who needs our help.”
+Optional village villager: “My little flower is shy. Maybe it'll find its color later.” This creates an
+optional post-restoration callback, not an unfinished mandatory quest.
+Exit: Arch opens, curved petals fall silently in grayscale. Transition camera: tracks from
+Explorer's feet to a distant giant berry tree and zooms toward the Orchard. Checkpoint:
+ruby_entry.
+R01 — THE ORCHARD THAT FORGOT RED | Arrival cinematic
+Weather/time: Late morning; soft overcast with a tiny ray cutting through light mist. Breezes sway
+enormous berry stems. Occasional pollen/dust motes float; colors remain carefully muted. Giant
+branches frame the horizon, with a distant jam mill and crystal grove. The orchard should look
+expensive and atmospheric despite having no restored colors.
+Camera: crane over cracked jam-wheel and berry stepping-stones; Ruby is glimpsed in the
+distance, curled protectively beneath THREE dull luminous crystals. Her silhouette is broad, round,
+gentle, unmistakably a young-friendly dragon. Wings tremble rather than menace.
+PIP: “Those fruit are behaving like bowling balls!”
+RUBY (calling, anxious): “I promise I am usually a very polite dragon!”
+EXPLORER: “Ruby? Are you okay?”
+RUBY: “I wanted every berry to be perfect. Then I got worried... and they all started bouncing.”
+PIP: “Those three crystals look like a very unhelpful spell. Let's figure them out.”
+Objective HUD: “Reach Ruby's crystal grove” with berry icon and broad world-space trail. Unlock:
+no new color yet.
+R02 — BERRY TRAIL: SOMETHING IS ROLLING | Exploration + hazard
+tutorial
+Level shape: A readable S-curve through giant fruit stalks. One safe stepped platform, one rolling-
+berry lane, one short duck-alcove, two large jumping pads; camera retains view of landing targets.
+Props include knitted twine rope fences and tiny jam taps. Two enemy archetypes are Bouncing
+Berry (rolling environmental hazard) and Ink Twig (shy patrol which gently pushes the player
+backwards on contact).
+Gameplay rhythm: (1) see a large berry roll on a distant loop; (2) wait for a symbol-marked
+landing circle, step aside; (3) cross stepping stones; (4) use basic dash to cross a wider—but safe—
+lane; (5) use Wonderbrush tap to open a gate.
+PIP: “Follow the round berry stamps!”
+EXPLORER: “We can get close without scaring her.”
+Optional Ink Twig dialogue: It squeaks “Oh!” and recoils when a Wonderbrush tap removes its
+sticky gray spell tag; no enemy death animation. Ink Twig returns to watering a plant.
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 5
+===== PAGE 6 =====
+Hazard tell: projected circle icon appears 2 seconds before berry arrives, plus bell chime and
+closed captions “[berry rolling nearby]”. Its outline may use accessibility UI accents before the red
+pigment is recovered, but never saturate an actual orchard fruit prematurely.
+Mistake behavior: The player is bounced to last safe pad, with a gentle bounce and no HP death
+screen. Three mistakes: Pip offers a slowed berry option. Checkpoint: ruby_trail_clear.
+R03 — THE LITTLE MIRROR GARDEN | Calm puzzle rehearsal
+Purpose: Teach the exact mirror interaction BEFORE the Ruby fight under pressure.
+Visual: Three antique-looking, oversized, rounded mirrors with ceramic petals; only first required
+now. A neutral white reflected guide ray points away from a sealed gate. The puzzle is NOT color-
+dependent; arrow shapes show direction.
+EXPLORER: “The light goes the wrong way.”
+PIP: “One little twist can change where it lands.”
+Player action: Approach mirror and press E to rotate it exactly 90 degrees per input. Each
+direction change produces a visible white ghost line, subtle chime, and a tactile 'click' animation.
+Align mirror -> beam reaches leaf-shaped receptor -> gate opens. No danger in this rehearsal.
+PIP: “Nice! We'll remember that when things get wobblier.”
+Save: ruby_mirror_tutorial.
+R04 — JAM-JAR JESTER | Nonviolent mini-boss, active playground
+puzzle
+Encounter space: A semicircular jam mill courtyard with three giant bowls (left circle icon, middle
+triangle, right star), waist-high safety islands and a bell tower. A whimsical, bouncy jam jar
+character in an oversized paper crown blocks the exit.
+JESTER: “No paint beyond this point!”
+PIP: “Oh! A jar with a very large opinion!”
+JESTER: “I have a job: KEEP. EVERYTHING. TIDY.”
+EXPLORER: “Maybe tidy doesn't have to mean stuck.”
+Mechanic: Jester lobs bouncy jam blobs with clear landing indicators, one every 7–9 seconds in
+Adventure. Three marked pots require a bounced projectile to land inside. During 2–3-second
+windows, a Wonderbrush-tapped plate redirects one blob into the chosen bowl. Each correct bowl
+locks and shows an icon + audible marimba note; incorrect shots harmlessly bounce away, no lost
+progress.
+Three outcomes: first bowl teaches; second introduces alternating blob lanes; third introduces a
+platform jump but keeps all three bowls readable. No attack animation resembling painful injury;
+upon success the Jester bursts into harmless gray berry mist, reappears smiling with a little rubber
+duck, and steps aside.
+JESTER: “Well! That was rather less tidy... and much more fun.”
+RUBY (far away): “I do not want to keep making messes.”
+Save: jam_jar_jester_clear. QA: Jester clear persists after reload; bowl puzzle cannot get
+permanently stuck by projectile physics.
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 6
+===== PAGE 7 =====
+R05 — RUBY BOSS, PHASE 1: THE BOUNCING BERRY PARADE
+Arena overview: Circular 26–34-meter provisional gameplay space, three safe islands, one wide
+entry portal, three differently shaped crystal pedestals and clear sky camera lanes. Ruby is in the
+background, never a hittable target. Use broad collision and generous traversal space. The camera
+must show the first crystal and berry threat together.
+PIP: “Ruby! We're here to help, not to hurt you!”
+RUBY: “Oh, berries! Please stop bouncing over my friends!”
+EXPLORER: “I can paint the crystal after the bounce!”
+Objective: Safely avoid 2–3 telegraphed berry landings, then approach the triangle-marked spell
+crystal and use a short brush tap. Berry hazards run independently while crystal interaction is
+active. Each berry warning: visible patterned landing circle -> sound -> descending fruit -> soft
+bounce -> 2–3-second safe action gap. Phase1 passes only after validated brush hit + crystal
+opening cinematic, not raw proximity.
+Progress feedback: Crystal opens like a paper flower, one crystal icon fills in the HUD, Ruby's tail
+relaxes.
+Checkpoint: ruby_phase_1. Optional hint after 3 failed dodges; never reset the crystal once saved.
+R06 — RUBY BOSS, PHASE 2: THREE MIRRORS, MANY BERRIES
+The showcase mechanic and highest priority beta test. Circular subarena with a waist-high
+center safe island, three rotatable mirrors, ONE crystal receptor, three landing circles and a visible
+exit gate. Puzzle and hazard state machines run at the same time; opening an interact tooltip does
+NOT suspend hazard simulation in default Adventure mode.
+Phase entry: 2-second overhead preview shows three mirror locations, then immediately returns
+to playable chase view; player is NEVER stuck in prolonged cinematic while attacks continue.
+PIP: “Turn the mirrors, but keep an eye on those berry circles!”
+RUBY: “You can do two things at once. I believe in you!”
+Example expected sequence, not forced timing:
+•
+T+0: phase checkpoint loaded; mirror receivers show pale ghost beam route; berry timer
+begins independently.
+•
+T+2: first landing marker appears; Pip: “Circle on the floor — step away!”
+•
+T+4: berry harmlessly rebounds; short interaction opening; mirror 1 rotates 90 degrees with
+E.
+•
+T+7: next telegraphed berry approaches while 2 mirrors remain incomplete; player dodges
+without resetting mirror 1.
+•
+T+10: mirror 2 rotates; white preview ray now points toward mirror 3.
+•
+T+13: mirror 3 rotates; ray reaches heart-shaped receptor; crystal opens; only then is the
+hazard sequencer stopped.
+Important implementation detail: The exact times above are STORYBOARD samples. In code,
+the player controls the pace. Puzzle state persists between dodges, attack telegraphs are world-
+space objects, and logic never assumes the player moves at storyboard speed. Three mistakes ->
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 7
+===== PAGE 8 =====
+offer optional slow-berries toggle; after ~90 seconds -> optional beam-preview hint; Story mode
+can skip after demonstrated attempts if the creator approves. Never spawn a berry onto the only
+mirror interaction location without safe escape.
+EXPLORER: “That last mirror... there!”
+RUBY: “Oh! One of my wings feels lighter.”
+Checkpoint: ruby_phase_2; persist mirror solution and crystal state.
+R07 — RUBY BOSS, PHASE 3: THE THREE STOMPS
+Escalation: Ruby's worried spell causes THREE large, slow, radiating shockwave rings, not angry
+attacks. Shapes on floor indicate timing; three low berry ledges provide safe hopping. Final spell
+crystal has a star icon; a large interaction prompt appears after third wave.
+RUBY: “My biggest wiggle is coming!”
+EXPLORER: “And my brushstroke is ready!”
+Mechanic: Player jumps or stands on a clearly marked berry ledge to avoid wave one; repeats with
+wave two; dashes to final marked safe spot as wave three passes. No exact-frame execution. The
+Wonderbrush stroke becomes available after the third wave, while ambient motion continues.
+Default settings use generous timing; reduced-motion version keeps visible stationary rings and
+calm pulse bars.
+Final response: Crystal splits into weightless paper petals. Ruby uncurls, wings expand slowly, eye
+highlights brighten; no pain/shock expression. Zero graphic impact. Three crystal icons turn into
+three open-flower icons.
+Checkpoint: ruby_phase_3 and immediately ruby_restoration_pending BEFORE starting the
+cosmetic transition; scene must recover if the player closes the browser mid-cinematic.
+R08 — THE RED THAT CAME HOME | Signature restoration cinematic
+Cinematic duration target: 12–18 seconds with Skip and reduced-motion 3–5-second fallback;
+timing provisional.
+C01: Tight on a warm red paint bead forming in the freed crystal. C02: It rolls onto Ruby's rounded
+snout; her eyes widen and she laughs. C03: Paint energy flows through gray berry stems in
+branching paths; physically existing mesh materials interpolate from desaturated to red. C04: Red
+spreads across berries, red-painted roof trim, ribboned arches and one cloth sash on the Explorer;
+blue, yellow, green, purple and orange world materials REMAIN LOCKED. C05: Orbit around Ruby as
+her restored red body, rosy cheeks and textured wing membranes are revealed. C06: Wide vista to
+the orchard and distant village: newly red objects stand out against a beautifully neutral
+environment. C07: Frame on child and Pip with ruby-red sash.
+Music: Original gentle orchestral swell + celesta + soft hand percussion; no licensed music. SFX:
+leaf tinkles, brush-whoosh, happy dragon hiccup. Avoid intense white-screen bloom, strobe or
+screen shake.
+RUBY: “My wings feel light again! Take this Ember Dye. It can help you make a friend.”
+EXPLORER: “You did it, Ruby!”
+RUBY: “We did it. Even with all those wobbly berries.”
+PIP: “Look! Red is back. And so is Ruby's big, brave smile.”
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 8
+===== PAGE 9 =====
+On-screen text + icon: RED RESTORED • berry icon • RUBY EMBER DYE (permanent recipe key, never
+spent) • FLAME BURST (Lord power, not a paid feature).
+Persistence and art restriction: Ruby restoration drives a material-tag registry. Only approved
+red-channel materials change, rather than tinting the entire scene red with a fullscreen filter. Save
+restored.red=true before/with scene transition; idempotent reward grant. When loading after
+completion, every correct object remains red and Ruby remains restored.
+R09 — FLAME COURTYARD | Reward teaching sequence
+Why Flame Burst: Expanded Bible makes the ordinary dash a beginning traversal move and
+Ruby's new power an elemental brush stroke. Flame Burst is a joyful magical painting beam, not a
+damaging weapon. It activates marked red targets and melts wax seals only.
+PIP: “Your dash got you there. Your new flame paints the target!”
+Tutorial 1, EASY: Three wax seals on a broad low wall. Cast F / accessibility action at the matching
+torch/berry glyph and see wax gently melt like crayon. Safe, untimed.
+Tutorial 2, COMBINED: One rolling berry passes through a lane; basic dash to the safe platform
+and cast Flame Burst at a torch-shaped switch. Clearly marked landing pad; failure respawns
+immediately, any already-lit seal persists.
+Tutorial 3, LATER MASTERY (roadmap): Optional path requires timing between two berry lanes
+and activating a distant red buoy in Chapter 2. Do not gate Chapter 1 completion behind a later-
+region mechanic.
+RUBY: “Thank you for showing me that brave doesn't mean perfect.”
+EXPLORER: “It means we can try again.”
+Reward UI: one clear, non-commercial inventory update. ruby_ember_dye is a permanent recipe
+unlock; its future crafting use is teased but Purple Dragon is NOT available until Bloop also supplies
+blue.
+R10 — ONE COLOR, MANY STORIES | Outro and next chapter tease
+Camera: Walk beside restored red berry groves; compare an earlier gray trail against new red fruit.
+Pip and Ruby meet at the orchard arch. A folded-paper wave motif stirs on a signpost toward
+Whisperwave Bay, but BLUE itself remains unavailable and scenery stays unpainted.
+PIP: “One color found. Two more primary paints to discover!”
+RUBY: “If you see anyone who thinks they're making a mess... remind them to keep trying.”
+EXPLORER: “I will. Bye, Ruby!”
+PIP: “Hear that? Something sounds like splashing... our next friend might need help.”
+On-screen: CHAPTER 1 COMPLETE / Red • Ruby Ember Dye • Flame Burst unlocked / Next: Whisperwave
+Bay — Coming in Chapter 2. If Chapter 2 is NOT built, label it as a locked preview, not a working
+button.
+Save: chapter_1_complete, location Hush Hollow or Ruby overlook based on safe checkpoint design.
+Allow replay without paying rewards twice.
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 9
+===== PAGE 10 =====
+F. Side quests — detailed content for full Chapter 1;
+beta can stage after main path is verified
+SQ-R1 — LOST BERRY BASKET
+NPC: Elderberry the market gardener, with enormous knitted mittens. Objective: Find three
+misplaced basket handles using shape-icon map guidance; one under a bridge, one next to jam mill,
+one on a safely reachable ledge. EXPLORER: “These don't have to be in the perfect place, do
+they?” ELDERBERRY: “The best basket is the one we bring home together.” Completion: 150
+Color Coins, one unique scrapbook sticker, +1 Rainbow Ticket, per proposal. No timed failure.
+SQ-R2 — ORCHARD BELL CHOIR
+NPC: Two shy berry bells. Objective: Reach two friendly neighbors with basic dash/jump (and later
+optional Flame Burst switch), then arrange three symbol-marked bell notes. Text-symbol
+alternatives for hearing differences. PIP: “A choir can sound lovely even when every bell is a little
+different.” Completion: same proposed optional reward schedule.
+SQ-R3 — JAM-JAR BRIDGE RESCUE
+NPC: Reformed Jester. Objective: Place three illustrated bridge pieces circle -> leaf -> star while
+background slow berry rolls give optional manageable movement pressure. Hints never shame the
+child. JESTER: “A bridge doesn't have to be straight to help our friends cross.” Completion: same
+proposed optional reward schedule.
+Beta implementation gate: Quests may be implemented after the core Ruby encounter has
+passed QA; never place nonfunctional quest buttons or award locked reward currencies without a
+visible in-game explanation. If the beta omits quests, mark the quest catalog as planned content in
+internal documents, not as already present.
+G. Dialogue rules and performances
+•
+•
+•
+•
+•
+•
+Pip: enthusiastic, gently humorous, never a scolding teacher. Speaks at the moment a player
+needs assistance, not every three seconds. Clear 1–2-sentence voice lines and captions; no
+jargon.
+Explorer: curious, capable, kind; identical spoken text across boy/girl options. No stereotypes,
+no child-blaming on mistakes.
+Ruby: soft mezzo/alto or warm low character voice, trembling when afraid, growing lighter as
+crystal seals break. Expressive, never vicious.
+Jam-Jar Jester: playful bureaucratic fussiness; laugh with the character, not at a frightened
+being.
+Narrator: optional soothing introduction; voice must not be essential for understanding
+gameplay.
+Pauses: gameplay controls only disabled during short, actually implemented cinematics, with
+SKIP. Unvoiced beta must still show perfectly timed subtitles and emotion animations.
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 10
+===== PAGE 11 =====
+H. Gameplay systems and concrete logic
+Input (desktop beta; actual platform support must be tested)
+WASD/arrows move; mouse look/drag camera; SPACE jump; SHIFT basic dash (available from
+prologue); E Wonderbrush context interaction; F Flame Burst after Ruby; ESC pause; H contextual
+hint; M palette view (locked paints clearly marked). Controller and touch schemes are planned, not
+supported until tested on actual hardware. The earlier starter ZIP still uses Shift as Crimson Dash
+after Red: Claude MUST detect, document and refactor this mismatch carefully with save migration.
+Core object tags
+Use authored metadata: paintChannel: 'red'|'blue'|'yellow'|null; paintableOnRestore;
+interactionGlyph; safeAnchor; isAccessibleIcon; chapterGate, rewardId. Natural skin tones and
+neutral accessibility UI accents are exempt from color locking. Do not key quest progress to raw
+mesh UUIDs generated every run.
+Suggested save schema (adapt, do not paste over working code
+blindly)
+{
+schemaVersion: 2,
+chapterId: 'ruby_orchard',
+checkpointId: 'ruby_mirror_tutorial',
+explorerPreset: 'girl',
+guardians: {ruby: false, bloop: false, sol: false, verdan: false, auron: false, nox: false,
+amara: false},
+primaryPaints: {red: false, blue: false, yellow: false},
+mixedPaints: {purple: false, orange: false, green: false},
+abilities: {jump: true, basicDash: true, flameBurst: false},
+permanentDyes: [],
+boss: {rubyPhase: 0, rubyMirrors: [0,0,0], rubyCompletedCrystals: [false,false,false]},
+quests: {}, rewardLedger: [], settings: {mode: 'adventure', subtitles: true, reducedMotion:
+false}
+}
+schemaVersion above is a PROPOSAL. First inspect and migrate the real existing save key color-me-
+back-demo-v1 rather than resetting saves. Write robust guards for corrupt local storage; checkpoint
+and reward writes must be idempotent.
+Boss independent state machine
+INTRO -> PHASE_1_RUNNING -> PHASE_1_CLEAR -> PHASE_2_RUNNING -> PHASE_2_CLEAR ->
+PHASE_3_RUNNING -> FINAL_CRYSTAL_CLEAR -> RESTORATION -> REWARD -> COMPLETE. Hazard scheduler in
+each running phase ticks INDEPENDENTLY of puzzleInteracting. Cancels/restarts upon loss of focus/
+pause; cannot hit while a cutscene has disabled input. Saved checkpoint restores puzzle and hazard
+state safely. Phase progress persists; accessibility options alter cadence but not rewards.
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 11
+===== PAGE 12 =====
+Difficulty
+Story: one clear soft hazard every 9–12 seconds, larger dodge window, optional hazard pause and
+auto-aim. Adventure (default): every 5–7 seconds, puzzle/hazard simultaneous. Brave: every 3–5
+seconds, still fair and nonviolent. A useful tell sequence: ~2-second ground marker -> ~1.5-second
+landing/avoid -> ~2–3 seconds safe interact -> ~1 second response. These are initial tuning goals
+and must be measured by playtesting.
+I. Acceptance and regression tests — require evidence,
+not a promise
+1.
+2.
+3.
+4.
+5.
+6.
+7.
+8.
+9.
+10.
+11.
+12.
+13.
+14.
+15.
+16.
+17.
+18.
+New game starts with ZERO restored primary pigments, regardless of hero preset.
+Both explorers have exact same camera, move speed, jump arc, collider and unlocked ability
+states.
+Prologue teaches and grants basic dash BEFORE boss; Ruby grants Flame Burst only AFTER
+successful rescue.
+Wonderbrush tap interacts only with the appropriate symbol; mirror turn snaps 90 degrees
+and shows ghost ray.
+Berry telegraphs have text/shape + sound cue; no offscreen surprise impact, no unwinnable
+mirror position.
+Ruby phase 2 hazards continue while all THREE mirrors are being solved in Adventure,
+demonstrably in recorded browser test.
+Stage clear saves; reload after phase 2 resumes at phase 3, not phase 1.
+Three failed dodges offer slower hazard assistance, without calling the child bad or removing
+rewards.
+Completing phase 3 triggers Red restoration exactly ONCE; reloading restores red tags and
+Ruby's kind appearance.
+Blue, yellow and all secondary pigment channels remain UNLOCKED/gray after Ruby; natural
+skin tones remain inclusive.
+Reward ledger grants Ruby Ember Dye and Flame Burst exactly once; inventory reads
+consistent after reload.
+Flame Burst activates three red-marked wax targets and works after save/load; no NPC can
+be damaged.
+Cutscene skip returns to a valid checkpoint, prevents stuck input and does not duplicate
+rewards.
+Pause stops hazard simulation. Reduced motion removes zoom/flash but preserves the
+readable color change.
+npm install, npm run check, npm test, npm run build results are reported exactly; a real
+browser run is required to say playable.
+Both heroes finish the 20–30-minute beta route on actual tested hardware without crashes or
+softlocks.
+Keyboard input tested now; touch/gamepad only advertised after separate device testing.
+No paid store, chat, unconsented child image upload or external ad tracking in beta.
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 12
+===== PAGE 13 =====
+J. Sign-off before chapter 2
+•
+Creator chooses whether Flame Burst/basic Dash supersedes old Crimson Dash reward.
+•
+Creator approves the chubby/rounded, toy-like explorer direction using one boy and one girl
+turntable.
+•
+Creator approves Ruby's corrupted-versus-restored model and three-phase arena diagram.
+•
+Game actually runs with correct checkpoint and core interactions; complete recorded end-to-
+end desktop playtest.
+•
+Creator approves restoration cinematic against actual 3D environment, not merely a
+rendered poster.
+•
+Copy chapter 1 folder and tagged build as an immutable milestone before adding Chapter 2.
+End — Chapter 1 script. Next artifact is a separate visual design specification; do not
+fabricate final renders or rigs before model-sheet approvals.
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 13
+===== PAGE 14 =====
+COLOR ME BACK! — RUBY ORCHARD
+Chapter 1 art, color, weather, camera, animation and
+asset production specification | v1.0
+Status: Original art-direction PROPOSAL derived from the Expanded Development Bible, especially
+sections A3, D0/D1, E3/E5, F3, K, M and N. This is a look-development brief, not generated 3D asset
+data. Each asset below needs creator approval, modeling, rigs where applicable, engine integration
+and actual rendering QA. It Takes Two may inspire creative ambition, elaborate environmental scale,
+narrative-driven mechanics and an inviting atmosphere, but do not copy its protected artwork,
+environments, characters or shapes.
+1. ONE-SENTENCE LOOK
+A charming, premium-feeling handcrafted toy-scale 3D fantasy that starts as a beautifully
+textured pearl-gray orchard and becomes a glowing tapestry of ripe ruby-red fruit when the child
+rescues a gentle dragon — lush and cinematic, but readable and safe for children ages five to ten.
+2. The non-negotiable visual style contract
+•
+•
+•
+•
+•
+•
+Hero proportions 2.7–3.2 heads tall; oversized head and expressive eyes, softly rounded
+chubby cheeks/limbs, broad friendly silhouette. Both explorer options have exactly matched
+movement hitboxes and scale.
+Rounded, bevelled shapes; cloth/felt stitches; painted-plastic, sculpted-clay, subtle paper and
+polished wood. Material variation is vital: the world should not look like a collection of default
+spheres on a flat plane.
+Rich detail by layering silhouette, composition, textures, decals, parallax and
+lighting, rather than cluttering paths or adding huge amounts of high-frequency detail.
+No realistic pores, photoreal adults, anime fashion models, glossy human anatomy, sharp
+threatening teeth, gore or oversaturated neon across the whole view.
+Legendary pet skins may later be highly elaborate, but every standard pet gives the same
+functional ability for free and seven palettes are included when a legendary skin is ever
+acquired.
+No green grass, brilliant blue skies or yellow sunflowers physically restored in Chapter 1; new
+Red is earned only at Ruby's restoration. Natural character skin tones remain natural
+throughout, as do small accessible UI highlights.
+3. World-scale and composition language
+A child explorer is about 1.0 relative world unit in this design model (actual engine scale should
+be consistent, not forced). Berry trees loom 6–9 child-heights high; berries are huge enough to act
+as rolling scenery, not photoreal fruit. Bridges are giant leaf mats stitched with rope. Houses are
+lumpy, clay-sculpted towers with round windows and thick trim; pathways arc in S- and C-shaped
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 1
+===== PAGE 15 =====
+lines so the composition reveals new landmarks progressively. Use foreground framing (hanging
+berry stalks), clear midground travel surfaces, and meaningful backgrounds (jam mill, hill ridge and
+Ruby's crystal grove). Silhouettes must read at gameplay distance.
+Distinct visual landmarks:
+1.
+2.
+3.
+4.
+5.
+6.
+7.
+8.
+The child's bedroom window with three paper cutouts: berry, wave, sun.
+Hush Hollow Clockbird sign, village plaza and soft-woven berry arch.
+The enormous bent Berrybell Tree with two fruit hanging like wind-chimes.
+A jam mill with stacked ceramic jars and swaying paper sails.
+Three standing mirrors on a circular tiled lily motif.
+A distant glowing crystal ring around Ruby's cave-like but daylight-filled nest.
+The Ruby arena: a light marble/wood circle surrounded by cushions of fruit, with a broad safe
+central island.
+A high sunset-facing overlook for color-restoration camera orbit, although sky itself does not
+turn yellow/orange.
+4. Color design — control the payoff
+Function Before Ruby After Ruby Example digital
+swatch*
+Sky haze Gray pearl Still gray pearl in Chapter 1 #CAD0D5
+Stone paths Chalk/cool pebble Mostly chalk/cool pebble #ADB4B9
+Bark Weathered graphite/brown-
+gray
+Still muted neutral #766F70
+Locked apple/berry red Desaturated cherry-gray Berry red #D64F59
+Restore wave accent Warm white-pink
+translucency
+Settles into red paint #EF4444
+Roof/red fabric embroidery Neutral plum-gray Warm coral/red #C94D4A
+Ruby dragon's restored
+scales
+Stone-gray/lilac-gray Soft warm red with coral
+underside
+#D94A59, #F48A7A
+Ruby Ember Dye item glyph Monochrome icon with
+outline
+Ruby red bottle + berry glyph #EF4444
+Visual accessibility highlight Soft white plus symbol Same soft white plus symbol #F3EEE8
+*Swatches are suggested artist/technical references, NOT color-science tests, fixed canon or final
+game textures. Use perceptual grayscale shader or authored before/after materials; don't alter all
+pixels with a uniform red filter. Colors don't have to be identical across UI / physically shaded
+materials. Be especially careful with blue/yellow/green elements while Red is the sole restored
+pigment.
+Palette hierarchy: 65% soothing neutral; 25% textural cool/warm gray; 10% tiny non-diegetic UI/
+glow accents BEFORE Ruby. After Ruby, red should be the first strong saturated environmental
+pigment, not a full-scene red wash. Preserve lightness/value contrast for monochrome readability.
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 2
+===== PAGE 16 =====
+5. Weather and lighting by scene
+Area Time/weather Lighting Motion/environment audio
+Bedroom clouded midmorning broad window bounce, gentle side
+shadow
+curtain drift, ceramic crayon box
+taps
+Hush Hollow
+square
+brighter cloud cover diffuse neutral key, edge rim on
+player
+bird-shaped wind vane clicks,
+paper flags wave
+Orchard
+entrance
+hazy late morning soft volumetric bands through
+oversized trees
+leaf rustle, distant rolling berry
+rattle
+Mirror Garden filtered clearing directional white reflection, crisp focal
+glints
+quiet glass hum, soft petals
+Jam Mill mild breeze, shifting cloud
+shadows
+stronger ambient occlusion, warm-
+neutral bounce
+pots clack, jam bells, springy blob
+boings
+Ruby Arena clearing clouds, no major
+storm
+big top fill so landing zones always
+readable; crystal rim
+musical berry thumps, dragon
+breaths
+Restoration cloud breaks locally red bounce on nearby geometry,
+controlled soft glow
+orchestral swell, leaf chatter,
+sparkle arcs
+Flame
+Courtyard
+calm afternoon crisp friendly key light, non-flashing
+red glyphs
+wax fizz, gentle brush whoosh
+Weather is atmospheric, NOT a difficulty modifier. Do not introduce hard rain, storms, blinding
+glare, screen-space fog, or aggressive lightning during the beta. No flicker that could cause
+photosensitivity issues. Use reduced-motion option to simplify drifting particles, cinematic sweeps
+and restoration effects.
+6. The two Explorers
+Shared rig/collider: identical overall height, pivot placement, foot contact, reach distance, jump
+arc, dash timing and camera framing. Personality-neutral story dialogue.
+Boy concept: round head, expressive brows, soft nose, chubby-cheek silhouette, practical baggy
+hoodie or short jacket, cuffed trousers, chunky sneakers, small sash for restored Red. Hairstyle
+variations must not force a gender stereotype.
+Girl concept: matching round head and scale; soft stylized curls or braid option; practical jacket/
+overalls and chunky sneakers; mirrored sash location, identical grip on Wonderbrush. Avoid adult
+silhouette, makeup, long fashion heels and exaggerated eye makeup. A blank 2D earlier reference
+should never be accepted as a 3D model or finished turntable.
+Both: natural inclusive skin tones not subject to color loss; before restoration, clothing begins
+desaturated. Start with 3 free outfits in the eventual full creator; beta may use 1 approved hero
+outfit each and not falsely present unmade customization options. Expression set: wonder /
+concern / courage / laughing / pride. Animation set: idle breath, walk, jog, start-stop, jump, land,
+dash, tap, sweep, turn mirror, bounce reaction, hug/high five, victory.
+Camera and image approval: for each hero: front, side, back, 3/4 turntable with the SAME lens/
+lighting/background; expression sheet; in-game scale comparison beside Pip and Ruby; gameplay-
+distance full-scene image; silhouette test in grayscale. No asset approved from a single glossy
+poster.
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 3
+===== PAGE 17 =====
+7. Pip — the small companion that carries the heart
+Shape: 0.35 child-heights, floating soft-bristle brush with short wooden body, ring eyes, eyebrows
+sculpted like brush bristles, optional two tiny gloved hands, flexible paint drop tail. Colors remain
+restrained: natural warm wood can exist, but magical pigment locked. Hover motion small and
+rhythmic; avoid covering sightlines during jumps or mirrors. 5 readable expressions: intrigued,
+concerned, excited, pointing, relieved. Pip's suggestion halo uses an icon and subtle outline rather
+than a flash.
+8. Ruby — the character centerpiece
+Neutral/corrupted: a plump, friendly dragon like a soft bean-shaped plush; thick rounded muzzle,
+large eyes, cushiony paws, little horn buds, soft broad wings. Her body is mostly gray-lilac and
+dusted by a pale cloudy magical seal; the three spell crystals hover at a distance without piercing or
+injuring her. Face conveys worried perfectionism and gentle apology, not aggression.
+Restored: same mesh and recognizably same face! Soft berry-red scales, salmon underside, coral
+wing membranes with embroidered-looking vein patterns, tiny warm glow on cheek and horns,
+joyful full-wing stretch. Height ~2–2.8 child heights (provisional for framing); collider is non-damage
+and separate from arena hazards. Animation set: frightened curl, eye glance, trembling wings, soft
+berry hiccup, head tilt, worried wave, relief stretch, smile, happy wave. She cannot be hit with a
+damaging attack; only separate crystals have interactive receivers.
+Art approval requires corrupted/restored front/side/back/three-quarter, profile next to both heroes,
+gameplay-distance (not just close portrait), wing stretch storyboard, and VFX-off readability.
+9. Jam-Jar Jester and ordinary hazards
+Jester: original stubby jar silhouette, paper crown, jam-splatter bowtie, eyes inside clear jar front,
+rubbery rounded base, comical spring hop. Gray before Ruby. Friendly moving target, never a
+person to harm. Three bowls and icon markings show where bounces must land. Its “defeat”
+animation is a pop of harmless berry mist followed by relief.
+Bouncing Berry: oversized round fruit with big stamped circle/stripe symbol, no angry face; path
+predictable and telegraphed. Ink Twig: felt-stick with worried doodled eyes and soft leaves; uncurl
+when a spell tag is brushed away. All characters need neutral + 3/4 + telegraph sheet.
+10. Key prop and FX inventory for beta
+•
+•
+•
+•
+•
+•
+•
+Bedroom: teddy, mirror, window with painted cutouts, crayon tray, Wonderbrush cradle.
+Village: 2 star seals, berry arch, 6 modular toy houses, market/cart, signage, safe jump stripe.
+Orchard: Berrybell Tree, 5 giant berry types/arrangements, 3 modular branch platforms, 2
+fence patterns, 4 jam signs, ink twig, rolling berry.
+Mirror Garden: reversible 90° mirror base, preview rays, receiver, exit gate.
+Jam Mill: 3 icon pots, Jester actor, 2 landing telegraphs, jar redirect plate, checkpoint alcove.
+Ruby Arena: 3 crystals (distinct icon shape), 3 mirrors, 3 berry landing markers, 3 phase UI
+indicators, safe island, 3 stomp-ring variants.
+Restoration: paint wave paths registered to actual red-capable meshes, Ruby material swap/
+interpolation, Explorer red sash, controlled original music sting and simple particles.
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 4
+===== PAGE 18 =====
+•
+Flame Courtyard: 3 wax seals, 1 torch switch, 1 easy berry lane, 1 reward altar.
+Required effects: 1) brush tap, 2) brush sweep, 3) neutral preview beam, 4) telegraph landing
+ring, 5) berry bounce squish, 6) crystal petal dissolve, 7) red paint wave, 8) Ruby wing shimmer, 9)
+Flame Burst brush trail, 10) wax melt, 11) checkpoint confirmation, 12) softened low-VFX
+alternatives for all of the above.
+11. 3D production practicality
+Every image concept is only a guide. Production needs meshes with sensible topology, UV mapping,
+textured materials, rig/animations for characters, LODs or culling when appropriate, collision
+proxies, compressed textures, GLB/glTF export, and runtime tests. Start with approved art sheets,
+then inexpensive greybox, then one showcase environment pass, not thirty disconnected glamorous
+stills. Build modular scenery, use instancing for fruit and leaves, cap dynamic shadows/lights to
+tested desktop budgets. Frame rate target only after real profiling. Prioritize camera clarity, collision
+and responsiveness over cinematic heavy rendering.
+12. Camera language and cinematography
+•
+•
+•
+•
+•
+•
+•
+Gameplay camera: child-height third-person follow, softly damped, collision-aware, minimum
+vertical angle to keep jumps visible, avoids having huge berries cover the hero.
+Discovery: long, curved reveal of Ruby framed by branches; no repeated giant cinema cuts.
+Puzzles: slight shoulder pan to show target; ghost beam always world-space; rotatable
+camera while hazards remain active.
+Mini-boss: broad 3/4 framing of all three pots, not a zoom on the Jester's face.
+Boss: cinematic intro with safely paused hazards; over-the-shoulder play with crystal and
+landing markers both visible.
+Phase 2: <2-second overhead preview ONLY while safe, then control returns; never lock
+camera in overhead gameplay if it hides berry warnings.
+Restoration: controlled 12–18-second series of close->wide shots with skip and motion-
+reduced path. At least one in-engine uncut shot must prove real material recoloring, not pre-
+rendered footage.
+13. UI design and accessibility
+Round translucent parchment-like UI surfaces with sufficient contrast, gentle pop animation; large
+outlined lettering, friendly icon labels. HUD = (upper left) current task, (upper right) three crystal/
+flower phase icons, (bottom right) context brush / dash / future Flame Burst, (bottom center) Pip
+hint line. Text must remain readable against gray/ red. Both in-game world markers and UI icons
+mark warning zones. An animated hazard is never communicated by red vs gray alone. Include
+subtitle backgrounds, font sizing, camera sensitivity, reduced motion, brightness, and Story/
+Adventure/Brave choices. Keep no ads, external chat or purchasing in beta.
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 5
+===== PAGE 19 =====
+14. Sound and music direction
+Original playful orchestral / woodwind / mallet textures: bedroom music-box mystery, village
+pizzicato warmth, orchard hand percussion, jam-mill comedic tuba/clarinet, Ruby arena upbeat
+pulse and bell telegraphs, red restoration soaring strings with childlike celesta. Sound mixing:
+danger cue remains intelligible but quiet/soothing; accessible caption mirrors cues; no licensed
+soundtrack from It Takes Two. Dynamic layers make the player feel like the world awakens after
+Red.
+15. Visual concept request order — ONE at a time for
+approval
+1.
+2.
+3.
+4.
+5.
+6.
+7.
+8.
+9.
+10.
+11.
+12.
+CMB_HERO_BOY_BASE_TURNTABLE_v01 (front, side, back, 3/4 + expressions).
+CMB_HERO_GIRL_BASE_TURNTABLE_v01 (matched height, same rig + expressions).
+CMB_COMPANION_PIP_BASE_TURNTABLE_v01.
+CMB_PROP_WONDERBRUSH_ACTION_v01.
+CMB_LORD_RUBY_CORRUPTED_RESTORED_v01.
+CMB_ENV_HUSH_HOLLOW_WIDE_GRAY_v01.
+CMB_ENV_RUBY_ORCHARD_WIDE_GRAY_v01.
+CMB_ENV_RUBY_ORCHARD_PATH_LAYOUT_v01.
+CMB_ENV_RUBY_ARENA_TOPDOWN_3PHASE_v01.
+CMB_ENV_RUBY_ORCHARD_BEFORE_AFTER_v01 (same camera and geometry, only unlocked
+red objects restored).
+CMB_NPC_JAM_JAR_JESTER_BASE_v01.
+CMB_PROP_MIRROR_AND_TELEGRAPH_v01.
+Each asset approval requires [ ] neutral turntable, [ ] coherent 3/4 key art, [ ] scale beside
+Explorer, [ ] gameplay-distance preview, [ ] low-VFX view, [ ] original rights/ownership checked,
+[ ] approval note. Never treat an illustrative PDF image as rigged 3D. Never generate huge asset
+batches before creator signs off on hero, Ruby and one environment style.
+16. Visual QA and rejection criteria
+Reject art if it looks like generic block/sphere primitives without intentional detail, over-blown
+bloom, adult character proportions, copied It Takes Two environment, inaccessible color-only threat
+telegraphs, gray world that is muddy rather than beautiful, post-restoration blue/yellow leakage,
+Ruby depicted as scary/violent, wildly inconsistent hero proportions, or concept images
+masquerading as complete game models. Approve when the scene reads clearly at real gameplay
+distance, shows multiple material types, consistent light direction, original craftsmanship and
+spectacular but controlled red restoration.
+Sources: Expanded Game Development Bible pp.4–5, 7–8, 15–18, 27–28, 32–35, 38–39, 40–41.
+External comparative inspiration: official EA It Takes Two gameplay article (2021) and Hazelight
+ArtStation environment-art discussion (2021). All concrete designs here are proposed original Color
+Me Back! creations.
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 6
+===== PAGE 20 =====
+SOURCE CHANGES / CREATOR
+APPROVAL REGISTER
+ID Issue Source distinction Recommended beta working
+assumption
+Creator
+approval
+A-01 Ruby ability Earlier Chapter 1: Crimson Dash after
+Ruby; Expanded Bible pp.4, 7–8, 16: free
+basic dash + Flame Burst
+Follow expanded design; migration
+required
+PENDING
+A-02 Story scope Original 3 primary-color Guardians;
+Expanded Bible proposes seven Color Lords
+Chapter 1 implements only Ruby;
+save schema reserves later seven
+PENDING
+A-03 Ruby chapter
+length
+Original 18–25m; expansion 55–80m plus
+optional
+Beta core 20–30m, expand without
+retcon
+PENDING
+A-04 Visual
+approval
+Earlier illustrated character cards vs
+updated toy-like 2.7–3.2-head 3D models
+Updated style spec for future 3D
+modeling
+PENDING
+A-05 Boss pressure Older gentle 3 phases; new persistent
+pressure during mirror interaction
+Active independent hazards in
+Adventure; Story assist option
+PENDING
+A-06 Pet/cosmetic
+economy
+Eight species and seven cosmetic palettes
+proposed; 600 Gems and 660 F2P path
+proposed
+NO shop or pet abilities built into
+Chapter 1 beta; future contracts
+reserved
+PENDING
+A-07 Platform Browser desktop first; phone/gamepad only
+after tests
+Desktop web initially; do not
+advertise other support
+PENDING
+A-08 Art production Reference PDFs show moods and 2D
+assets, not final meshes
+Approve hero, Ruby, environment
+model sheets before costly full art
+PENDING
+A-09 Source video No game video uploaded in current turn Document from PDF and source ZIP
+only
+WAITING FOR
+VIDEO
+Ten golden rules checklist (must appear in engineering
+reviews)
+•
+•
+•
+•
+•
+•
+•
+All functional story powers are free, no P2W
+Seven cosmetic palettes come with each exclusive pet skin
+At least one 600 Gem exclusive reachable through achievable free progression, once store is
+implemented
+Young-looking, cute, soft-edged, rounded 3D characters
+Legendary skins remain functionally identical to standard pets
+Threats continue during puzzles in Adventure mode; assist available
+Explicit safe tutorial -> easy test -> combo -> later reuse for powers
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 1
+===== PAGE 21 =====
+•
+Lords rescued nonviolently, the Fade helped
+•
+Solo story first, Season Two co-op only if approved
+•
+Creator approval precedes locking new proposals
+Reference locations
+•
+•
+•
+•
+•
+•
+•
+•
+•
+Expanded Bible pp.4–5: 10 golden rules, style contract
+pp.7–8: prologue and Ruby story
+pp.15–18: brush, ability registry, active hazards and mirror implementation
+pp.21–24: proposed currency, pricing and child safeguards (NOT built now)
+pp.27–35: asset counts, workflow, visual prompts and code architecture
+pp.37–39: acceptance tests, developer handoff and unresolved choices
+pp.40–41: Ruby boss phase dialogue appendix
+Original Color_Me_Back_Chapter_1.pdf: Crimson Dash and short original chapter
+Earlier Color_Me_Back_GAME_CODE.zip: JS ES modules, existing placeholder guardians and old
+ability progression
+COLOR ME BACK! / CHAPTER 01 / DRAFT FOR APPROVAL PAGE 2
+===== PAGE 22 =====
+CHAPTER 01 / RUBY ORCHARD
+Color locks, before-and-after palette, icon rules
+BEFORE: MUTED AND BEAUTIFUL
+Pearl sky / locked
+Cool pearl neutral
+#CAD0D5
+Paving stone / neutral
+Readable light/dark texture
+#ADB4B9
+Trunk / neutral
+Muted organic structure
+#766F70
+Berry locked / gray
+Gray before Ruby rescue
+#8A858C
+Ruby locked / gray lilac
+Not bright red until rescue
+#8F8893
+White symbol / accessible
+Shape cues remain visible
+#F3EEE8
+AFTER: RED RETURNS TO TAGGED OBJECTS ONLY
+Ripe berry red #D64F59
+Red restoration accent #EF4444
+Painted roof accent #C94D4A
+Ruby scale red #D94A59
+Ruby coral underside #F48A7A
+NO early blue, yellow, green, orange or purple environment restoration.
+Natural skin tones and white UI glyphs are not locked by the grayscale treatment.
+Proposed concept swatches, not approved textures or measured accessibility contrast.
+===== PAGE 23 =====
+COLOR LANGUAGE / GAMEPLAY RULES
+Chapter 1 beta symbolic cues and future-proofing
+BERRY / CIRCLE
+Ruby berry hazard landing area
+Shape + text + bell. 2-second visible telegraph.
+TRIANGLE / CRYSTAL
+First spell seal
+Interact with E / Wonderbrush only.
+ARROW / MIRROR
+Direction / 90 degree turn
+Neutral white preview ray; no aim precision.
+STAR / CRYSTAL
+Final Ruby seal
+Paint only AFTER stomp waves end.
+FLAME / TORCH
+Flame Burst power receiver
+Unlocked only after Ruby is rescued.
+FLOWER / CHECK
+Phase saved successfully
+Each of three phases grants a persistent checkpoint.
+LOCK / WAVES
+Blue and other paints unavailable
+No automatic purple/green/orange mixing before recipes.
+DYE / VIAL
+Permanent Ruby Ember Dye
+Free recipe KEY, never paid or consumed.
+DRAFT FOR CREATOR APPROVAL / NOT FINAL ART

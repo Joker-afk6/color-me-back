@@ -1,53 +1,58 @@
 /**
- * PROLOGUE — THE DAY THE COLORS DISAPPEARED.
- * Lines are verbatim from docs/design/00_Prologue_Script.md. Ids are voice-ready.
+ * PROLOGUE — Director Script P00–P02 (docs/design/chapter1-beta/06_COMBINED_CHAPTER_1_CLAUDE_REFERENCE.pdf,
+ * pages 3–5). Story lines are verbatim from that script. Ids are voice-ready.
+ *
+ * The earlier prologue (P0–P4, docs/design/00_Prologue_Script.md) is preserved unchanged in that file
+ * and at git tag v0.2-chapter1-alpha; see docs/CANON_CHANGES.md CC-02.
  */
 import type { Line } from '../speakers';
 
 const L = (id: string, speaker: Line['speaker'], text: string): Line => ({ id, speaker, text });
 
 export const PROLOGUE = {
-  // P0 — opening cinematic
+  // P01 — The morning the colors disappeared (cutscene)
   opening: [
-    L('p0.narrator.morning', 'narrator', 'On a morning that should have been ordinary, something extraordinary had vanished.'),
-    L('p0.explorer.drawing', 'explorer', 'My drawing! Where did all the colors go?'),
+    L('p01.narrator.shine', 'narrator', 'One morning, Hush Hollow forgot how to shine. Not how to laugh. Not how to dream. Just how to be colorful.'),
+    L('p01.explorer.crayon', 'explorer', 'Wait... where did my red crayon go?'),
   ],
-  // P1 — inspect three details (any order)
+  // P01 — interactions 1 and 2 (optional, any order)
   inspect: {
-    teddy: [L('p1.explorer.teddy', 'explorer', 'Even Teddy looks different.')],
-    crayons: [L('p1.explorer.crayons', 'explorer', 'They are all the same gray!')],
-    window: [L('p1.explorer.window', 'explorer', 'The whole village looks like a pencil drawing.')],
+    teddy: [L('p01.explorer.teddy', 'explorer', 'You look a little sleepy, too.')],
+    crayons: [L('p01.explorer.crayons', 'explorer', "The pictures are still here, but their colors aren't!")],
+    // Interaction 3: a tiny levitating brush taps the glass.
+    window: [
+      L('p01.pip.psst', 'pip', "Psst! If you're looking for colors, I'm very good at looking!"),
+      L('p01.explorer.who', 'explorer', 'Who said that?'),
+    ],
   },
+  // P01 — Pip drops into the room, lands bristle-first, spins upright.
   pipEntrance: [
-    L('p1.pip.entrance', 'pip', "Pssst! Over here! I'm Pip! And yes, I normally look a little more colorful."),
-    L('p1.explorer.fix', 'explorer', 'Can we fix it?'),
-    L('p1.pip.brave', 'pip', 'We can try. The colors are waiting for somebody brave enough to find them.'),
+    L('p01.pip.intro', 'pip', 'Pip! Paintbrush, guide, professional finder of almost everything.'),
+    L('p01.explorer.find', 'explorer', 'Then can you find my color?'),
+    L('p01.pip.wonderbrush', 'pip', "I think we can find everybody's. But first... would you help me wake this old Wonderbrush?"),
   ],
-  // P2 — the Wonderbrush
-  wonderbrush: [L('p2.pip.wonderbrush', 'pip', 'This is the Wonderbrush! It can wake up sleeping magic. Go on - give that sleepy star a tap!')],
-  starAwake: [L('p2.pip.waiting', 'pip', "See? The magic hasn't disappeared. It's just waiting!")],
-  // P3 — Hush Hollow tutorial walk
-  village: [L('p3.pip.remembers', 'pip', "The village remembers the colors... even if we can't see them yet.")],
-  firstStar: [L('p3.pip.first', 'pip', "One star awake! I wonder who's behind that berry-shaped arch?")],
-  secondStar: [L('p3.pip.second', 'pip', 'Two stars! Look - a path to the Ruby Orchard!')],
-  // P4 — transition
-  arch: [
-    L('p4.explorer.brave', 'explorer', "What if I'm not brave enough?"),
-    L('p4.pip.together', 'pip', "Then we'll be brave together. Besides, the best adventures begin with a tiny first step."),
+  // P02 — Hush Hollow: the two sleeping stars
+  village: [L('p02.pip.step', 'pip', 'Take a little step. Now a hop! Your feet already remember how to be brave.')],
+  firstStar: [
+    L('p02.explorer.easy', 'explorer', "That wasn't so hard!"),
+    L('p02.pip.brushstroke', 'pip', 'Excellent! A real artist always tries more than one brushstroke.'),
   ],
+  secondStar: [L('p02.pip.stamps', 'pip', 'See those berry stamps on the road? They lead to someone who needs our help.')],
 };
 
 /**
- * Short spoken/printed tutorial prompts ("Tutorial interactions use icons, plain labels and short
- * spoken instructions"). These are UI helpers, not script dialogue.
+ * Short spoken/printed tutorial prompts. These are UI helpers written in the game's voice,
+ * NOT script dialogue.
  */
 export const PROLOGUE_PROMPTS = {
-  look: 'Look around your room. Walk with W A S D or the arrow keys.',
-  inspect: 'Find things that look different. Walk close and press E.',
-  takeBrush: 'Take the Wonderbrush. Press E.',
-  tapStar: 'Tap the sleepy star with your Wonderbrush. Press E.',
+  inspect: 'Look around your room. Walk with W A S D or the arrow keys, and press E to look.',
+  window: 'Something is tapping on the window!',
+  takeBrush: 'Take the Wonderbrush from its cradle. Press E.',
   door: 'Go outside to Hush Hollow. Walk to the door and press E.',
+  move: 'Walk with W A S D. Drag the mouse to look around.',
+  jump: 'Press Space to hop over the little brook!',
+  dash: 'Run along the sparkly stripe and tap Shift to dash!',
   stars: 'Wake the two Wonderbrush stars in Hush Hollow.',
-  jump: 'Press Space to jump up the step!',
+  terrace: 'Press Space to jump up the step!',
   arch: 'Walk through the berry arch to the Ruby Orchard.',
 };

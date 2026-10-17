@@ -1,18 +1,19 @@
 /**
- * PROLOGUE — Explorer's bedroom (script P0–P2), built as an open-front diorama.
- *  P0  Opening cinematic: the drawing's colors withdraw as ribbons out of the window.
- *  P1  Inspect teddy / crayons / window (any order); Pip arrives after two; 30 s assist highlight.
- *  P2  Take the Wonderbrush, tap the sleepy star (local gray sparkle only), go outside.
+ * Director Script P01 — the morning the colors disappeared. Explorer's bedroom, an open-front diorama.
+ *  Cutscene: the drawing's colors withdraw as ribbons out of the window (skippable).
+ *  Teddy and crayons are optional; the WINDOW is where Pip taps the glass and drops in.
+ *  Take the old Wonderbrush (assist icon 20 s, Pip hint 35 s) → checkpoint prologue_bedroom_complete
+ *  → the door to Hush Hollow. (The earlier P0–P2 bedroom star is preserved at tag v0.2-chapter1-alpha.)
  */
 import * as THREE from 'three';
 import { Level, type SpawnPoint } from '../core/Level';
 import { PROLOGUE, PROLOGUE_PROMPTS } from '../data/script/prologue';
 import type { BedroomInspectable } from '../state/SaveData';
-import { canLeaveBedroom, finishOpening, inspectBedroomObject, leaveBedroom, takeWonderbrush, wakeBedroomStar } from '../state/progression';
+import { canLeaveBedroom, finishOpening, inspectBedroomObject, leaveBedroom, takeWonderbrush } from '../state/progression';
 import { UNIT, mesh, RoundedBoxGeometry, starGeometry } from '../rendering/shapes';
 import { drawingTextures, paintNoiseTexture, pencilVillageTexture } from '../rendering/textures';
 import { HintLadder } from '../systems/Hints';
-import { place, wonderStar, type WonderStar } from './props';
+import { place } from './props';
 import { wordLabel, type WordLabel } from './labels';
 import { keycap } from '../ui/icons';
 import { createSky } from '../rendering/Sky';
@@ -21,7 +22,6 @@ const DRAWING_POS = new THREE.Vector3(3.1, 2.35, -3.96);
 const WINDOW_POS = new THREE.Vector3(-0.4, 2.3, -3.98);
 const BED_SIT = new THREE.Vector3(-2.78, 0, -2.0);
 const BRUSH_POS = new THREE.Vector3(3.65, 0.99, -3.25);
-const STAR_POS = new THREE.Vector3(0.9, 0, -0.9);
 const DOOR_POS = new THREE.Vector3(4.75, 1.1, -0.8);
 
 interface Ribbon {
@@ -47,7 +47,6 @@ export class BedroomLevel extends Level {
   private inspectPos = new Map<BedroomInspectable, THREE.Vector3>();
   private ribbons: Ribbon[] = [];
   private brushOnDesk!: THREE.Group;
-  private star!: WonderStar;
   private doorGlow!: THREE.MeshStandardMaterial;
   private t = 0;
   private busy = false;
@@ -291,12 +290,6 @@ export class BedroomLevel extends Level {
     knob.position.set(4.92, 1.15, -0.3);
     root.add(knob);
 
-    // ── Sleepy star (appears in P2)
-    this.star = wonderStar(L, false);
-    this.star.group.position.copy(STAR_POS).add(new THREE.Vector3(0, 0.9, 0));
-    this.star.group.visible = false;
-    root.add(this.star.group);
-
     // ── Interactables + word labels (P1)
     const addInspect = (id: BedroomInspectable, word: string, pos: THREE.Vector3, labelPos: THREE.Vector3) => {
       const lbl = wordLabel(L, word);
@@ -323,17 +316,9 @@ export class BedroomLevel extends Level {
       position: BRUSH_POS.clone(),
       radius: 2.0,
       label: 'Take the Wonderbrush',
+      // Director Script P01: the old Wonderbrush rests in its cradle (placeholder: the desk stand).
       enabled: () => this.game.save.prologue.phase === 'wonderbrush' && !this.game.save.prologue.hasWonderbrush && !this.busy,
       onInteract: () => void this.takeBrush(),
-    });
-    this.game.interactions.add({
-      id: 'sleepy-star',
-      position: STAR_POS.clone().add(new THREE.Vector3(0, 0.9, 0)),
-      radius: 1.9,
-      label: 'Tap the sleepy star',
-      enabled: () => this.game.save.prologue.phase === 'wonderbrush' && this.star.group.visible && !this.game.save.prologue.bedroomStarAwake && !this.busy,
-      blocked: () => (this.game.save.prologue.hasWonderbrush ? null : 'Take the Wonderbrush from the desk first!'),
-      onInteract: () => void this.tapStar(),
     });
     this.game.interactions.add({
       id: 'door',
@@ -414,10 +399,9 @@ export class BedroomLevel extends Level {
       case 'opening':
         return 'Wake up…';
       case 'inspect':
-        return `Look around your room. Find things that look different (${Math.min(2, s.inspected.length)}/2)`;
+        return 'Look around your room. Something looks different… (the window?)';
       case 'wonderbrush':
-        if (!s.hasWonderbrush) return 'Take the Wonderbrush from the desk';
-        if (!s.bedroomStarAwake) return 'Tap the sleepy star with your Wonderbrush';
+        if (!s.hasWonderbrush) return 'Help Pip: take the old Wonderbrush from its cradle';
         return 'Go outside to Hush Hollow (the door)';
       default:
         return 'Go outside to Hush Hollow';
@@ -435,10 +419,6 @@ export class BedroomLevel extends Level {
     g.showPip(pipHere);
     if (s.prologue.hasWonderbrush) this.brushOnDesk.visible = false;
     g.player?.setBrushVisible(s.prologue.hasWonderbrush);
-    if (s.prologue.phase === 'wonderbrush') {
-      this.star.group.visible = true;
-      this.star.setAwake(s.prologue.bedroomStarAwake);
-    }
     if (s.prologue.phase === 'opening') void this.openingCinematic();
     else if (s.prologue.phase === 'inspect') this.beginInspect(false);
     else if (s.prologue.phase === 'wonderbrush') this.beginWonderbrushHints();
@@ -519,15 +499,15 @@ export class BedroomLevel extends Level {
       g.toast(`${keycap('W')}${keycap('A')}${keycap('S')}${keycap('D')} walk · ${keycap('E')} look`, 5);
       g.narrator.speak(PROLOGUE_PROMPTS.inspect);
     }
-    // Failure assist: after 30 s, gently highlight the closest object (never graded).
+    // Failure assist (never graded): first the closest unseen thing, then the window, where Pip is.
     this.hints = new HintLadder('bedroom-inspect', [
-      { after: 30, run: () => this.highlightClosest() },
-      { after: 25, run: () => this.highlightClosest() },
-      { after: 25, run: () => this.highlightClosest() },
+      { after: 30, run: () => this.highlight(this.closestUninspected()) },
+      { after: 25, run: () => this.highlight('window') },
+      { after: 25, run: () => this.highlight('window') },
     ]);
   }
 
-  private highlightClosest(): void {
+  private closestUninspected(): BedroomInspectable | null {
     const p = this.game.player!.position;
     let best: BedroomInspectable | null = null;
     let bestD = Infinity;
@@ -539,13 +519,22 @@ export class BedroomLevel extends Level {
         best = id;
       }
     }
-    if (!best) return;
-    const lbl = this.labels.get(best)!;
+    return best;
+  }
+
+  private highlight(id: BedroomInspectable | null): void {
+    if (!id || this.game.save.prologue.inspected.includes(id)) return;
+    const lbl = this.labels.get(id)!;
     lbl.setHighlight(true);
-    this.game.particles.sparkles(this.inspectPos.get(best)!.clone().add(new THREE.Vector3(0, 0.4, 0)), { count: 24, color: '#fff3b0', speed: 1.8, life: 1.4 });
-    this.game.soundCaption('Something sparkles nearby');
-    this.game.sfx('chime');
-    window.setTimeout(() => lbl.setHighlight(false), 6000);
+    this.game.particles.sparkles(this.inspectPos.get(id)!.clone().add(new THREE.Vector3(0, 0.4, 0)), { count: 24, color: '#fff3b0', speed: 1.8, life: 1.4 });
+    if (id === 'window') {
+      this.game.soundCaption('Tap, tap… something taps on the window');
+      this.game.sfx('interact');
+    } else {
+      this.game.soundCaption('Something sparkles nearby');
+      this.game.sfx('chime');
+    }
+    this.game.level?.tasks.wait(6).then(() => lbl.setHighlight(false));
   }
 
   private async inspect(id: BedroomInspectable): Promise<void> {
@@ -563,64 +552,78 @@ export class BedroomLevel extends Level {
       pipArrives = r.pipArrives;
       return r.save;
     }, true);
+    if (id === 'window') {
+      // Interaction 3: a tiny levitating brush taps the glass (Pip is still outside).
+      g.soundCaption('Tap, tap, tap on the glass');
+      g.sfx('interact', 0.7);
+      await g.wait(0.5);
+    }
     await g.say(PROLOGUE.inspect[id]);
     this.busy = false;
     if (pipArrives) await this.pipEntrance();
   }
 
-  /** P1 end — Pip's playful entrance, then P2 begins. */
+  /** P01 — Pip drops into the room, lands bristle-first, spins upright; then the Wonderbrush. */
   private async pipEntrance(): Promise<void> {
     const g = this.game;
     const p = g.player!;
     this.busy = true;
     this.hints?.stop();
     await g.cutscene(async () => {
-      const curtain = new THREE.Vector3(-1.95, 2.2, -3.5);
-      g.pip.teleport(curtain);
+      const outside = WINDOW_POS.clone().add(new THREE.Vector3(0, 0.1, -0.5));
+      g.pip.teleport(outside);
       g.showPip(true);
       g.sfx('whoosh');
       g.pip.mood = 'excited';
-      const mid = p.position.clone().lerp(curtain, 0.45).setY(2.2);
+      const mid = p.position.clone().lerp(WINDOW_POS, 0.45).setY(2.2);
       g.pip.loopDeLoop(mid, 1.5);
       const look = p.position.clone().lerp(mid, 0.5).setY(1.6);
       void g.camera.moveTo(p.position.clone().add(new THREE.Vector3(1.6, 1.8, 3.6)), look, 1.6);
       await g.wait(1.6);
       await g.say(PROLOGUE.pipEntrance);
       g.pip.mood = 'happy';
-      // P2 — Pip circles the ordinary-looking brush; sparks form a friendly star shape.
+      // Cutscene blend: Pip rises, a musical sparkle, and sparkles point at the brush in its cradle.
       g.pip.circle(BRUSH_POS);
       await g.camera.moveTo(new THREE.Vector3(2.6, 2.4, -0.6), BRUSH_POS, 1.8);
-      for (let i = 0; i < 10; i++) {
-        const a = (i / 10) * Math.PI * 2;
-        const r = i % 2 === 0 ? 0.6 : 0.26;
-        g.particles.sparkles(BRUSH_POS.clone().add(new THREE.Vector3(Math.cos(a - Math.PI / 2) * r, 0.7 + Math.sin(a - Math.PI / 2) * -r, 0.2)), { count: 6, color: '#fff3b0', speed: 0.3, life: 2.2, size: 0.3, gravity: 0, upward: 0 });
-      }
+      this.pointAtBrush();
       g.sfx('starWake', 0.6);
       await g.wait(1.0);
-      this.star.group.visible = true;
-      g.particles.sparkles(this.star.group.position, { count: 30, color: '#fff3b0', speed: 1.6, life: 1.2 });
-      await g.say(PROLOGUE.wonderbrush);
     });
     g.pip.circle(null);
     this.busy = false;
+    g.narrator.speak(PROLOGUE_PROMPTS.takeBrush);
     this.beginWonderbrushHints();
   }
 
+  /** White-gold sparkle arrow from the player toward the Wonderbrush (the "arrows" of P01). */
+  private pointAtBrush(): void {
+    const g = this.game;
+    const from = (g.player?.position.clone() ?? new THREE.Vector3()).setY(1.2);
+    for (let i = 1; i <= 7; i++) g.particles.sparkles(from.clone().lerp(BRUSH_POS, i / 7), { count: 4, color: '#fff3b0', speed: 0.3, life: 2.2, size: 0.32, gravity: 0, upward: 0.1 });
+    g.particles.sparkles(BRUSH_POS.clone().add(new THREE.Vector3(0, 0.4, 0)), { count: 24, color: '#fff3b0', speed: 1.6, life: 1.4 });
+  }
+
+  /** Director Script P01 assist: an icon pulses after 20 s; Pip gives a hint after 35 s. */
   private beginWonderbrushHints(): void {
     const g = this.game;
     this.hints = new HintLadder('bedroom-brush', [
       {
-        after: 25,
+        after: 20,
+        run: () => {
+          if (g.save.prologue.hasWonderbrush) return;
+          this.pointAtBrush();
+          g.soundCaption('The Wonderbrush sparkles');
+          g.sfx('chime');
+        },
+      },
+      {
+        after: 15,
         run: () => {
           const s = g.save.prologue;
           if (!s.hasWonderbrush) {
             g.pip.circle(BRUSH_POS);
-            g.pipSays('The Wonderbrush is on the desk. Walk close and press E!');
-            window.setTimeout(() => g.pip.circle(null), 5000);
-          } else if (!s.bedroomStarAwake) {
-            g.pip.circle(this.star.group.position);
-            g.pipSays('Give the sleepy star a tap — press E next to it!');
-            window.setTimeout(() => g.pip.circle(null), 5000);
+            g.pipSays('The old Wonderbrush is on the desk. Walk close and press E!');
+            g.level?.tasks.wait(5).then(() => g.pip.circle(null));
           } else {
             g.pipSays('The door is on the right wall. Let’s go outside!');
           }
@@ -635,31 +638,16 @@ export class BedroomLevel extends Level {
     this.busy = true;
     g.player?.play('brush');
     g.sfx('pickup');
-    g.particles.sparkles(BRUSH_POS, { count: 30, color: '#fff3b0', speed: 2.2, life: 1 });
+    // Waking the old Wonderbrush: white-gold sparkle only (no pigment returns).
+    g.particles.sparkles(BRUSH_POS, { count: 30, colors: ['#ffffff', '#fff3b0', '#e6e9ee'], speed: 2.2, life: 1 });
     this.brushOnDesk.visible = false;
     g.player?.setBrushVisible(true);
-    g.state.apply(takeWonderbrush, true);
+    // Director Script checkpoint: prologue_bedroom_complete (after pickup).
+    g.checkpoint(takeWonderbrush);
     this.hints?.progress();
-    g.toast(`You have the Wonderbrush! ${keycap('E')} to paint`, 3.5);
-    g.narrator.speak(PROLOGUE_PROMPTS.tapStar);
-    this.busy = false;
-  }
-
-  private async tapStar(): Promise<void> {
-    const g = this.game;
-    this.busy = true;
-    g.player?.play('brush');
-    await g.wait(0.25);
-    this.star.setAwake(true);
-    g.sfx('starWake');
-    // A local GRAY sparkle only — the world does not restore red yet (script P2).
-    g.particles.sparkles(this.star.group.position, { count: 40, colors: ['#ffffff', '#d9dde3', '#b9bfc8'], speed: 2.4, life: 1.3 });
-    g.state.apply(wakeBedroomStar, true);
-    g.hud.flashCheckpoint();
-    this.hints?.progress();
-    await g.say(PROLOGUE.starAwake);
-    this.busy = false;
+    g.toast(`You have the Wonderbrush! ${keycap('E')} to paint · the door leads outside`, 4);
     g.narrator.speak(PROLOGUE_PROMPTS.door);
+    this.busy = false;
   }
 
   private async leave(): Promise<void> {
@@ -673,11 +661,7 @@ export class BedroomLevel extends Level {
   override update(dt: number): void {
     this.t += dt;
     for (const l of this.labels.values()) l.update(this.t);
-    this.star.update(dt, this.t);
-    if (this.star.group.visible && !this.star.awake && Math.random() < dt * 2) {
-      this.game.particles.sparkles(this.star.group.position, { count: 1, color: '#fff3b0', speed: 0.5, life: 1, size: 0.25 });
-    }
-    // Door glows once the star is awake.
+    // Door glows once the Wonderbrush is picked up.
     const glow = canLeaveBedroom(this.game.save) ? 0.8 + Math.sin(this.t * 3) * 0.3 : 0;
     this.doorGlow.emissiveIntensity += (glow - this.doorGlow.emissiveIntensity) * Math.min(1, dt * 4);
     // Ribbons draw forward then let go of their tail.

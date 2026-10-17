@@ -172,7 +172,7 @@ export class RubyOrchardLevel extends Level {
       case 'restoreRed':
         return 'Red is coming back…';
       case 'dashTutorial':
-        return 'Crimson Dash! Run, jump, then tap Shift to whoosh across the berry pads';
+        return 'Dash challenge! Run, jump, then tap Shift to whoosh across the berry pads';
       case 'complete': {
         const n = s.collectibles.filter((c) => c.startsWith('berry')).length;
         return n < 3 ? `Chapter complete! Find the Berry Stickers (${n}/3) or go home through the arch` : 'Chapter complete! Walk through the arch to return to Hush Hollow';
@@ -519,7 +519,7 @@ export class RubyOrchardLevel extends Level {
     this.openEastGate(false);
     this.ruby.mood = 'happy';
     await g.say(RUBY.dashIntro);
-    g.toast(`${keycap('Shift')} Crimson Dash — tap while running!`, 4.5);
+    g.toast(`${keycap('Shift')} Dash — jump, then tap while flying!`, 4.5);
     g.narrator.speak('Tap Shift while you run to dash. Jump, then tap Shift to whoosh across the berry pads.');
     this.hints = new HintLadder('ruby-dash', [
       { after: 25, run: () => g.pipSays('Through the open hedge to the east — follow the sparkly arrows!') },

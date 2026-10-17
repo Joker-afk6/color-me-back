@@ -2,7 +2,7 @@
  * Runtime owner of the current save. Gameplay code calls `apply(rule)` with a pure progression
  * function; the result is stored, persisted (when it is a checkpoint) and broadcast to the UI.
  */
-import type { SaveData } from './SaveData';
+import { withDerived, type SaveData } from './SaveData';
 import { SaveStore } from './SaveStore';
 
 type Listener = (save: Readonly<SaveData>) => void;
@@ -36,7 +36,8 @@ export class GameState {
     if (!this.current) return false;
     const next = rule(this.current);
     if (next === this.current) return false;
-    this.current = next;
+    // Keep the derived fields (abilities, checkpointId) current in memory, not only on disk.
+    this.current = withDerived(next);
     if (checkpoint) this.persist();
     this.emit();
     return true;

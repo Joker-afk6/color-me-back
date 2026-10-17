@@ -1,14 +1,19 @@
 /**
- * PROLOGUE P3–P4 — Hush Hollow (and the hub after the prologue).
- * Rounded houses, leafless silhouettes, a winding safe cobblestone path, two Wonderbrush stars
- * (either order; one up a small step that teaches jumping) and the berry-shaped arch that
- * brightens with a white star outline. Walking through the arch leads to Chapter 1.
+ * Director Script P02 — Hush Hollow: the two sleeping stars (and the hub after the prologue).
+ *  Tutorial A: move + camera, hop a safe 0.7 m brook (instant ledge reset), Basic Dash along a
+ *              broad courtyard stripe (white-gold trail; red stays locked).
+ *  Tutorial B: first star — a simple Wonderbrush tap.
+ *  Tutorial C: second star — move, jump up a step, tap.
+ *  Exit: berry stamps lead to the arch; it opens with gray petals and the camera looks toward the
+ *        Orchard. Checkpoint ruby_entry.
+ * Geometry marked PLACEHOLDER is greybox for gameplay; final art waits for model-sheet approval
+ * (VISUAL_ASSET_MANIFEST.md).
  */
 import * as THREE from 'three';
 import { Level, type SpawnPoint } from '../core/Level';
 import { PROLOGUE, PROLOGUE_PROMPTS } from '../data/script/prologue';
-import { completePrologue, villageStarsComplete, wakeVillageStar } from '../state/progression';
-import type { VillageStar } from '../state/SaveData';
+import { completePrologue, markPracticed, villageStarsComplete, wakeVillageStar } from '../state/progression';
+import type { PracticeMove, VillageStar } from '../state/SaveData';
 import { UNIT, mesh, RoundedBoxGeometry } from '../rendering/shapes';
 import { labelTexture, paintNoiseTexture } from '../rendering/textures';
 import { createSky } from '../rendering/Sky';
@@ -16,12 +21,15 @@ import { batchStatic } from '../rendering/batch';
 import { HintLadder } from '../systems/Hints';
 import { keycap } from '../ui/icons';
 import { Rng } from '../utils/rng';
-import { PAL, berryArch, berryBush, cloud, cobblePath, fence, grassTufts, hill, house, lampPost, leaflessTree, place, rock, wonderStar, type Arch, type WonderStar } from './props';
+import { PAL, berry, berryArch, berryBush, cloud, cobblePath, fence, grassTufts, hill, house, lampPost, leaflessTree, place, rock, wonderStar, type Arch, type WonderStar } from './props';
 import { PuffBird } from './creatures';
+import { wordLabel, type WordLabel } from './labels';
+import { BROOK, DASH_STRIPE } from './hushHollowLayout';
 
 const ARCH_Z = -24;
 const SPAWN_HOME = new THREE.Vector3(-0.6, 0, 11.4);
 const SPAWN_ARCH = new THREE.Vector3(0, 0, -19.5);
+
 
 interface StarSpot {
   id: VillageStar;
@@ -46,10 +54,13 @@ export class HushHollowLevel extends Level {
   private birds: PuffBird[] = [];
   private t = 0;
   private busy = false;
-  private p4Played = false;
   private leaving = false;
-  private jumpTipShown = false;
+  private terraceTipShown = false;
   private hubNoticeShown = false;
+  private brookTipShown = false;
+  private dashTipShown = false;
+  private dashLabel!: WordLabel;
+  private hopLabel!: WordLabel;
 
   build(): void {
     const L = this.lib;
@@ -61,11 +72,30 @@ export class HushHollowLevel extends Level {
     root.add(sky);
     this.track(sky.material as THREE.Material);
 
-    // Ground + boundary
-    const ground = mesh(new THREE.CircleGeometry(36, 64), L.paint(PAL.grass, 'green', { roughness: 0.96, map: paintNoiseTexture(21, 9, 0.16) }), { cast: false });
+    // Ground + boundary. The ground has a hole where the Tutorial A brook is.
+    const groundShape = new THREE.Shape();
+    groundShape.absarc(0, 0, 36, 0, Math.PI * 2, false);
+    const brookHole = new THREE.Path();
+    // Shape space: x = world x, y = -world z (the mesh is rotated -90° about X).
+    const bz0 = -(BROOK.z + BROOK.width / 2);
+    const bz1 = -(BROOK.z - BROOK.width / 2);
+    brookHole.moveTo(BROOK.x0, bz0).lineTo(BROOK.x1, bz0).lineTo(BROOK.x1, bz1).lineTo(BROOK.x0, bz1).lineTo(BROOK.x0, bz0);
+    groundShape.holes.push(brookHole);
+    const groundGeo = new THREE.ShapeGeometry(groundShape, 48);
+    const uv = groundGeo.attributes.uv!;
+    for (let i = 0; i < uv.count; i++) uv.setXY(i, (uv.getX(i) + 36) / 72, (uv.getY(i) + 36) / 72);
+    const ground = mesh(groundGeo, L.paint(PAL.grass, 'green', { roughness: 0.96, map: paintNoiseTexture(21, 9, 0.16) }), { cast: false });
     ground.rotation.x = -Math.PI / 2;
     root.add(ground);
-    P.box(0, -4, 90, 90, -2, 0);
+    // Ground colliders around the brook strip (the original single box spanned x −45..45, z −49..41).
+    const bzN = BROOK.z - BROOK.width / 2;
+    const bzS = BROOK.z + BROOK.width / 2;
+    P.box(0, (-49 + bzN) / 2, 90, bzN + 49, -2, 0);
+    P.box(0, (bzS + 41) / 2, 90, 41 - bzS, -2, 0);
+    P.box((-45 + BROOK.x0) / 2, BROOK.z, BROOK.x0 + 45, BROOK.width, -2, 0);
+    P.box((BROOK.x1 + 45) / 2, BROOK.z, 45 - BROOK.x1, BROOK.width, -2, 0);
+    this.buildBrook(decor);
+    this.buildDashStripe();
     for (const [x, z, w, d] of [[-25, -4, 1, 60], [25, -4, 1, 60], [0, 22, 52, 1], [0, -34, 52, 1]] as const) P.box(x, z, w, d, 0, 4, { walkable: false });
     for (let i = 0; i < 9; i++) {
       const a = (i / 9) * Math.PI * 2;
@@ -74,12 +104,18 @@ export class HushHollowLevel extends Level {
     for (let i = 0; i < 7; i++) place(root, cloud(L, 40 + i, 3.5 + (i % 3)), Math.cos(i * 0.9) * 55, 20 + (i % 3) * 5, Math.sin(i * 0.9) * 55);
 
     // Winding cobblestone path from home to the arch
-    const pathPts = [new THREE.Vector3(0, 0, 14.5), new THREE.Vector3(-2.5, 0, 8), new THREE.Vector3(-1.2, 0, 2), new THREE.Vector3(2.8, 0, -4), new THREE.Vector3(2.2, 0, -10), new THREE.Vector3(-0.8, 0, -16), new THREE.Vector3(0, 0, -21), new THREE.Vector3(0, 0, -30)];
-    root.add(cobblePath(L, pathPts, 2.6, 7));
-    const dirt = mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pathPts), 80, 1.7, 8, false), L.paint('#D8D2C4', 'neutral', { roughness: 1 }), { cast: false });
-    dirt.scale.y = 0.02;
-    dirt.position.y = -0.01;
-    root.add(dirt);
+    // (split at the brook so the cobbles never bridge the Tutorial A gap)
+    const pathHome = [new THREE.Vector3(0, 0, 14.5), new THREE.Vector3(-2.4, 0, 9.5), new THREE.Vector3(-2.4, 0, BROOK.z + 0.5)];
+    const pathPts = [new THREE.Vector3(-2.3, 0, BROOK.z - 0.5), new THREE.Vector3(-1.2, 0, 2), new THREE.Vector3(2.8, 0, -4), new THREE.Vector3(2.2, 0, -10), new THREE.Vector3(-0.8, 0, -16), new THREE.Vector3(0, 0, -21), new THREE.Vector3(0, 0, -30)];
+    const dirtMat = L.paint('#D8D2C4', 'neutral', { roughness: 1 });
+    for (const [pts, seed] of [[pathHome, 6], [pathPts, 7]] as const) {
+      root.add(cobblePath(L, [...pts], 2.6, seed));
+      const dirt = mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([...pts]), 60, 1.7, 8, false), dirtMat, { cast: false });
+      dirt.scale.y = 0.02;
+      dirt.position.y = -0.01;
+      root.add(dirt);
+    }
+    this.buildBerryStamps(decor, new THREE.CatmullRomCurve3(pathPts));
 
     // Explorer's home (door faces the path)
     place(decor, house(L, 1, { roofColor: PAL.roofRed, roofKey: 'red', width: 4.4 }), 0, 0, 17.2, Math.PI);
@@ -191,6 +227,12 @@ export class HushHollowLevel extends Level {
       P.box(side * 5.8, ARCH_Z + 0.3, 6, 1.4, 0, 1.6);
     }
 
+    // PLACEHOLDER: a distant giant berry tree the exit camera looks toward (Orchard landmark).
+    const farTree = leaflessTree(L, 911, 9);
+    farTree.scale.setScalar(2.2);
+    place(decor, farTree, 0, 0, -62);
+    for (const [x, y, z] of [[-3, 15, -61], [3.5, 16.5, -63], [0.5, 19, -61.5], [-1.5, 12.5, -64]] as const) place(decor, berry(L, 1.3), x, y, z);
+
     // Village creatures (silent)
     for (let i = 0; i < 4; i++) {
       const bird = new PuffBird(L, 300 + i, new THREE.Vector3([-3, 6, -9, 9][i]!, 0, [6, 4, -8, -13][i]!));
@@ -199,6 +241,98 @@ export class HushHollowLevel extends Level {
     }
 
     batchStatic(decor, root);
+  }
+
+  /** PLACEHOLDER greybox: the Tutorial A brook — a shallow channel with bright kerbs so the gap reads. */
+  private buildBrook(decor: THREE.Group): void {
+    const L = this.lib;
+    const P = this.physics;
+    const len = BROOK.x1 - BROOK.x0;
+    const cx = (BROOK.x0 + BROOK.x1) / 2;
+    const stone = L.paint(PAL.stoneDark, 'neutral', { roughness: 0.95 });
+    // Bed: soft "water" (blue-keyed, so it stays gray until Chapter 2). Touching it = instant ledge reset.
+    const bed = mesh(new THREE.BoxGeometry(len, 0.2, BROOK.width), L.paint(PAL.water, 'blue', { roughness: 0.3 }), { cast: false });
+    bed.position.set(cx, BROOK.floorY + 0.1, BROOK.z);
+    decor.add(bed);
+    P.box(cx, BROOK.z, len, BROOK.width, -2, BROOK.floorY, { hazard: true, safe: false });
+    for (const side of [-1, 1]) {
+      const wall = mesh(new THREE.BoxGeometry(len, -BROOK.floorY, 0.06), stone, { cast: false });
+      wall.position.set(cx, BROOK.floorY / 2, BROOK.z + side * (BROOK.width / 2 - 0.03));
+      decor.add(wall);
+      // Accessible white kerb (#F3EEE8): the edge is visible by value and shape, not hue.
+      const kerb = mesh(new RoundedBoxGeometry(len, 0.07, 0.2, 2, 0.03), L.paint('#F3EEE8', 'neutral', { roughness: 0.7 }), { cast: false });
+      kerb.position.set(cx, 0.035, BROOK.z + side * (BROOK.width / 2 + 0.1));
+      decor.add(kerb);
+    }
+    for (const x of [BROOK.x0, BROOK.x1]) {
+      const cap = mesh(new THREE.BoxGeometry(0.06, -BROOK.floorY, BROOK.width), stone, { cast: false });
+      cap.position.set(x, BROOK.floorY / 2, BROOK.z);
+      decor.add(cap);
+    }
+    this.hopLabel = wordLabel(L, 'HOP!  Space');
+    this.hopLabel.group.position.set(-2.35, 2.1, BROOK.z);
+    this.root.add(this.hopLabel.group);
+  }
+
+  /** PLACEHOLDER greybox: the broad courtyard stripe for Basic Dash practice (a felt runner with chevrons). */
+  private buildDashStripe(): void {
+    const c = document.createElement('canvas');
+    c.width = 128;
+    c.height = 512;
+    const ctx = c.getContext('2d');
+    if (ctx) {
+      ctx.fillStyle = '#E4DFD3';
+      ctx.fillRect(0, 0, 128, 512);
+      ctx.strokeStyle = '#9A8F98';
+      ctx.lineWidth = 6;
+      ctx.strokeRect(6, 6, 116, 500);
+      ctx.fillStyle = '#F3EEE8';
+      ctx.strokeStyle = '#3A3A40';
+      ctx.lineWidth = 3;
+      for (let i = 0; i < 6; i++) {
+        const y = 440 - i * 76;
+        ctx.beginPath();
+        ctx.moveTo(24, y + 26);
+        ctx.lineTo(64, y - 10);
+        ctx.lineTo(104, y + 26);
+        ctx.lineTo(104, y + 44);
+        ctx.lineTo(64, y + 8);
+        ctx.lineTo(24, y + 44);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      }
+    }
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    this.track(tex);
+    const len = DASH_STRIPE.z0 - DASH_STRIPE.z1;
+    const stripe = mesh(new THREE.PlaneGeometry(DASH_STRIPE.width, len), this.lib.paint('#ffffff', 'neutral', { roughness: 0.95, map: tex }), { cast: false });
+    stripe.rotation.x = -Math.PI / 2;
+    stripe.position.set(DASH_STRIPE.x, 0.075, (DASH_STRIPE.z0 + DASH_STRIPE.z1) / 2);
+    this.root.add(stripe);
+    this.dashLabel = wordLabel(this.lib, 'DASH  Shift');
+    this.dashLabel.group.position.set(DASH_STRIPE.x + 2.2, 1.9, DASH_STRIPE.z0 - 0.6);
+    this.root.add(this.dashLabel.group);
+  }
+
+  /** PLACEHOLDER: berry stamps on the road from the plaza to the arch (red-keyed: they turn red with Ruby). */
+  private buildBerryStamps(decor: THREE.Group, curve: THREE.CatmullRomCurve3): void {
+    const L = this.lib;
+    const ink = L.paint(PAL.berry, 'red', { roughness: 0.8 });
+    const leaf = L.paint('#F3EEE8', 'neutral', { roughness: 0.8 });
+    for (let t = 0.42; t <= 0.86; t += 0.055) {
+      const pt = curve.getPointAt(t);
+      const tan = curve.getTangentAt(t);
+      const stamp = mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.03, 18), ink, { cast: false });
+      stamp.position.set(pt.x, 0.09, pt.z);
+      decor.add(stamp);
+      const tip = mesh(new THREE.ConeGeometry(0.11, 0.2, 3), leaf, { cast: false });
+      tip.rotation.x = -Math.PI / 2;
+      tip.rotation.z = -Math.atan2(tan.x, -tan.z);
+      tip.position.set(pt.x + tan.x * 0.36, 0.1, pt.z + tan.z * 0.36);
+      decor.add(tip);
+    }
   }
 
   private buildWell(): THREE.Group {
@@ -248,6 +382,8 @@ export class HushHollowLevel extends Level {
       return 'Walk through the berry arch to the Ruby Orchard';
     }
     const n = s.prologue.villageStars.length;
+    if (n === 0 && !s.prologue.practiced.includes('jump')) return 'Hop over the little brook (Space)';
+    if (n === 0 && !s.prologue.practiced.includes('dash')) return 'Dash along the stripe (run + Shift)';
     if (n < 2) return `Wake the two Wonderbrush stars (${n}/2)`;
     return PROLOGUE_PROMPTS.arch;
   }
@@ -257,6 +393,11 @@ export class HushHollowLevel extends Level {
     const s = g.save;
     for (const spot of this.stars) spot.star.setAwake(s.prologue.villageStars.includes(spot.id) || s.prologue.phase === 'complete');
     if (villageStarsComplete(s) || s.prologue.phase === 'complete') this.openArch(true);
+    // Tutorial A labels only matter during the prologue.
+    for (const [label, move] of [[this.hopLabel, 'jump'], [this.dashLabel, 'dash']] as const) {
+      label.group.visible = s.prologue.phase === 'village';
+      label.setDone(s.prologue.practiced.includes(move));
+    }
     g.showPip(true);
     if (s.prologue.phase === 'village') {
       this.hints = this.makeHints();
@@ -270,8 +411,8 @@ export class HushHollowLevel extends Level {
     await g.wait(0.6);
     await g.say(PROLOGUE.village);
     g.lock(false);
-    g.toast(`${keycap('E')} near a star to wake it · ${keycap('Space')} to jump`, 5);
-    g.narrator.speak(PROLOGUE_PROMPTS.stars);
+    g.toast(`${keycap('W')}${keycap('A')}${keycap('S')}${keycap('D')} walk · drag the mouse to look · ${keycap('Space')} hop`, 5);
+    g.narrator.speak(PROLOGUE_PROMPTS.move);
   }
 
   private makeHints(): HintLadder {
@@ -322,6 +463,7 @@ export class HushHollowLevel extends Level {
     const count = g.save.prologue.villageStars.length;
     if (count === 1) {
       await g.say(PROLOGUE.firstStar);
+      if (!this.game.save.prologue.villageStars.includes('terraceStar')) g.narrator.speak('The other star is up on the stone terrace.');
     } else {
       this.hints?.stop();
       await g.say(PROLOGUE.secondStar);
@@ -339,8 +481,19 @@ export class HushHollowLevel extends Level {
       this.openArch(false);
       g.sfx('starWake');
       g.particles.sparkles(new THREE.Vector3(0, 4.2, ARCH_Z + 0.5), { count: 60, colors: ['#ffffff', '#fff6d0'], speed: 3, life: 1.6 });
+      this.grayPetals();
       await g.wait(2.2);
     });
+  }
+
+  /** Exit beat: curved petals fall silently in grayscale (reduced motion: fewer, slower). */
+  private grayPetals(): void {
+    const g = this.game;
+    const n = g.settings.reducedMotion ? 10 : 28;
+    for (let i = 0; i < n; i++) {
+      const at = new THREE.Vector3((Math.random() - 0.5) * 4.4, 3.6 + Math.random() * 1.4, ARCH_Z + (Math.random() - 0.5) * 1.2);
+      g.particles.puff(at, { count: 1, colors: ['#E6E3EA', '#C9C5CD', '#A9A4AD'], speed: 0.35, upward: 0, size: 0.28, life: 3.2, gravity: 0.35, drag: 1.5 });
+    }
   }
 
   private openArch(instant: boolean): void {
@@ -353,6 +506,8 @@ export class HushHollowLevel extends Level {
     this.t += dt;
     for (const s of this.stars) s.star.update(dt, this.t);
     for (const b of this.birds) b.update(dt, this.game.player?.position ?? null);
+    this.hopLabel.update(this.t);
+    this.dashLabel.update(this.t);
     this.archBright += (this.archTarget - this.archBright) * Math.min(1, dt * 1.5);
     this.arch.setBright(this.archBright);
     const mm = this.mist.material as THREE.MeshBasicMaterial;
@@ -363,26 +518,18 @@ export class HushHollowLevel extends Level {
     const p = g.player;
     if (!p || g.locked || this.busy) return;
     const s = g.save;
-    // Jump tip near the step (shown once per visit, spoken too).
-    if (!this.jumpTipShown && s.prologue.phase === 'village' && !s.prologue.villageStars.includes('terraceStar') && p.position.distanceTo(new THREE.Vector3(6.55, 0, -7.4)) < 3.2) {
-      this.jumpTipShown = true;
+    if (s.prologue.phase === 'village') this.tutorialA();
+    // Tutorial C: jump tip near the terrace step (shown once per visit, spoken too).
+    if (!this.terraceTipShown && s.prologue.phase === 'village' && !s.prologue.villageStars.includes('terraceStar') && p.position.distanceTo(new THREE.Vector3(6.55, 0, -7.4)) < 3.2) {
+      this.terraceTipShown = true;
       g.toast(`${keycap('Space')} Jump up the step!`, 4);
-      g.narrator.speak(PROLOGUE_PROMPTS.jump);
+      g.narrator.speak(PROLOGUE_PROMPTS.terrace);
     }
     // Arch still sleepy: a friendly nudge.
     if (s.prologue.phase === 'village' && !villageStarsComplete(s) && p.position.z < ARCH_Z + 2.5 && Math.abs(p.position.x) < 3 && !this.hubNoticeShown) {
       this.hubNoticeShown = true;
       g.pipSays('The arch is still sleepy. Let’s wake both stars first!');
-      window.setTimeout(() => (this.hubNoticeShown = false), 8000);
-    }
-    // P4 — before walking through
-    if (s.prologue.phase === 'village' && villageStarsComplete(s) && !this.p4Played && p.position.z < ARCH_Z + 5 && Math.abs(p.position.x) < 4.5) {
-      this.p4Played = true;
-      void (async () => {
-        this.busy = true;
-        await g.say(PROLOGUE.arch);
-        this.busy = false;
-      })();
+      void this.tasks.wait(8).then(() => (this.hubNoticeShown = false));
     }
     // Walking through the arch
     if (!this.leaving && p.position.z < ARCH_Z - 1.2 && Math.abs(p.position.x) < 2.4) {
@@ -391,12 +538,65 @@ export class HushHollowLevel extends Level {
     }
   }
 
+  /** P02 Tutorial A: notice the hop over the brook and a dash on the stripe (tips shown once each). */
+  private tutorialA(): void {
+    const g = this.game;
+    const p = g.player!;
+    const s = g.save;
+    const pos = p.position;
+    const inBrookX = pos.x > BROOK.x0 - 0.2 && pos.x < BROOK.x1 + 0.2;
+    if (!s.prologue.practiced.includes('jump')) {
+      if (!this.brookTipShown && inBrookX && Math.abs(pos.z - BROOK.z) < 3.2) {
+        this.brookTipShown = true;
+        g.toast(`${keycap('Space')} Hop over the brook!`, 4);
+        g.narrator.speak(PROLOGUE_PROMPTS.jump);
+      }
+      // A real hop near the brook counts (the ground here is flat at y = 0). Walking across is also
+      // safe — the 0.7 m gap is narrower than the explorer's feet — so the tip simply stays up.
+      if (inBrookX && Math.abs(pos.z - BROOK.z) < 4 && pos.y > 0.25) this.practiced('jump');
+    } else if (!s.prologue.practiced.includes('dash')) {
+      const nearStripe = Math.abs(pos.x - DASH_STRIPE.x) < DASH_STRIPE.width / 2 + 2.5 && pos.z < DASH_STRIPE.z0 + 2.5 && pos.z > DASH_STRIPE.z1 - 1;
+      if (!this.dashTipShown && nearStripe) {
+        this.dashTipShown = true;
+        g.toast(`Run along the stripe, then tap ${keycap('Shift')} to dash!`, 4.5);
+        g.narrator.speak(PROLOGUE_PROMPTS.dash);
+      }
+      const onStripe = Math.abs(pos.x - DASH_STRIPE.x) < DASH_STRIPE.width / 2 + 0.4 && pos.z < DASH_STRIPE.z0 + 0.4 && pos.z > DASH_STRIPE.z1 - 0.4;
+      if (onStripe && p.motor.dashActive) this.practiced('dash');
+    }
+  }
+
+  private practiced(move: PracticeMove): void {
+    const g = this.game;
+    if (!g.state.apply((s) => markPracticed(s, move), true)) return;
+    this.hints?.progress();
+    const at = g.player!.position.clone().setY(g.player!.position.y + 1);
+    g.particles.sparkles(at, { count: 22, colors: ['#ffffff', '#fff1c9'], speed: 1.8, life: 1 });
+    g.sfx('chime');
+    if (move === 'jump') {
+      this.hopLabel.setDone(true);
+      g.pipSays('Hop! Just like that!');
+    } else {
+      this.dashLabel.setDone(true);
+      g.pipSays('Whoosh! That’s your Dash. Now, those sleepy stars…');
+      g.narrator.speak(PROLOGUE_PROMPTS.stars);
+    }
+  }
+
   private async goToOrchard(firstTime: boolean): Promise<void> {
     const g = this.game;
     this.leaving = true;
     g.lock(true);
     if (firstTime) {
-      g.state.apply(completePrologue, true);
+      // Director Script checkpoint ruby_entry.
+      g.checkpoint(completePrologue);
+      // Exit camera: from the Explorer's feet toward the distant giant berry tree and the Orchard.
+      await g.cutscene(async () => {
+        const feet = g.player!.position.clone();
+        g.camera.cut(feet.clone().add(new THREE.Vector3(0.6, 0.6, 2.2)), feet.clone().setY(0.3));
+        await g.camera.moveTo(feet.clone().add(new THREE.Vector3(0, 4.5, 3)), new THREE.Vector3(0, 12, -62), 2.6);
+        await g.camera.moveTo(new THREE.Vector3(0, 6, ARCH_Z - 14), new THREE.Vector3(0, 14, -62), 1.8);
+      });
       await g.chapterCard('Chapter 1', 'The Ruby Orchard', 'Restore Red · Ruby the Rumble Dragon', 'ruby', [], 3.4);
     } else {
       g.state.persist();
@@ -406,6 +606,6 @@ export class HushHollowLevel extends Level {
   }
 
   override fallMessage(): string | null {
-    return null;
+    return this.game.save.prologue.phase === 'village' ? 'Splash! Let’s hop over the brook with Space.' : null;
   }
 }

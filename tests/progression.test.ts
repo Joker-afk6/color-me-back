@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { newSave, type SaveData } from '../src/state/SaveData';
+import { checkpointIdOf, newSave, type SaveData } from '../src/state/SaveData';
 import * as P from '../src/state/progression';
 
 /** Walk a save through the prologue exactly as the game does. */
@@ -9,8 +9,9 @@ function finishPrologue(hero: 'girl' | 'boy' = 'girl'): SaveData {
   s = P.inspectBedroomObject(s, 'teddy').save;
   s = P.inspectBedroomObject(s, 'window').save;
   s = P.takeWonderbrush(s);
-  s = P.wakeBedroomStar(s);
   s = P.leaveBedroom(s);
+  s = P.markPracticed(s, 'jump');
+  s = P.markPracticed(s, 'dash');
   s = P.wakeVillageStar(s, 'terraceStar');
   s = P.wakeVillageStar(s, 'pathStar');
   return P.completePrologue(s);
@@ -24,54 +25,78 @@ function toRubyStage1(hero: 'girl' | 'boy' = 'girl'): SaveData {
   return P.startRubyEncounter(s);
 }
 
-describe('prologue', () => {
-  it('Pip arrives after exactly two inspections, in any order; the third is optional', () => {
+describe('prologue (Director Script P01–P02)', () => {
+  it('Pip arrives when the window is inspected; teddy and crayons are optional and never bring Pip', () => {
     let s = P.finishOpening(newSave('boy'));
     const a = P.inspectBedroomObject(s, 'crayons');
     expect(a.pipArrives).toBe(false);
     s = a.save;
-    const repeat = P.inspectBedroomObject(s, 'crayons');
-    expect(repeat.save).toBe(s); // inspecting the same object twice does not count
-    const b = P.inspectBedroomObject(s, 'window');
-    expect(b.pipArrives).toBe(true);
-    expect(b.save.prologue.phase).toBe('wonderbrush');
-    const c = P.inspectBedroomObject(b.save, 'teddy');
-    expect(c.pipArrives).toBe(false);
-    expect(c.save.prologue.inspected).toHaveLength(3);
+    expect(P.inspectBedroomObject(s, 'crayons').save).toBe(s); // inspecting twice does not count
+    const t = P.inspectBedroomObject(s, 'teddy');
+    expect(t.pipArrives).toBe(false);
+    expect(t.save.prologue.phase).toBe('inspect');
+    const w = P.inspectBedroomObject(t.save, 'window');
+    expect(w.pipArrives).toBe(true);
+    expect(w.save.prologue.phase).toBe('wonderbrush');
+    // The window alone (first thing inspected) is enough, too.
+    const direct = P.inspectBedroomObject(P.finishOpening(newSave('girl')), 'window');
+    expect(direct.pipArrives).toBe(true);
   });
 
-  it('cannot leave the bedroom without the Wonderbrush and the woken star', () => {
+  it('nothing can be inspected during the opening cutscene', () => {
+    const s = newSave('girl');
+    expect(P.inspectBedroomObject(s, 'window').save).toBe(s);
+  });
+
+  it('picking up the Wonderbrush is checkpoint prologue_bedroom_complete and opens the door', () => {
     let s = P.finishOpening(newSave('girl'));
-    s = P.inspectBedroomObject(s, 'teddy').save;
+    expect(P.takeWonderbrush(s)).toBe(s); // Pip has not asked yet
     s = P.inspectBedroomObject(s, 'window').save;
+    expect(checkpointIdOf(s)).toBe('prologue_pip_met');
     expect(P.canLeaveBedroom(s)).toBe(false);
-    expect(P.wakeBedroomStar(s)).toBe(s); // needs the brush first
     s = P.takeWonderbrush(s);
-    expect(P.canLeaveBedroom(s)).toBe(false);
-    s = P.wakeBedroomStar(s);
+    expect(checkpointIdOf(s)).toBe('prologue_bedroom_complete');
     expect(P.canLeaveBedroom(s)).toBe(true);
     expect(P.leaveBedroom(s).location).toBe('hushHollow');
+    expect(Object.values(s.colors).some(Boolean)).toBe(false); // waking the brush restores no pigment
   });
 
-  it('the bedroom star never restores a color', () => {
+  it('Tutorial A practice is remembered once, and only in Hush Hollow', () => {
     let s = P.finishOpening(newSave('girl'));
-    s = P.inspectBedroomObject(s, 'teddy').save;
-    s = P.inspectBedroomObject(s, 'window').save;
-    s = P.wakeBedroomStar(P.takeWonderbrush(s));
-    expect(Object.values(s.colors).some(Boolean)).toBe(false);
+    expect(P.markPracticed(s, 'jump')).toBe(s); // not in the bedroom
+    s = P.leaveBedroom(P.takeWonderbrush(P.inspectBedroomObject(s, 'window').save));
+    const j = P.markPracticed(s, 'jump');
+    expect(j.prologue.practiced).toEqual(['jump']);
+    expect(P.markPracticed(j, 'jump')).toBe(j);
   });
 
-  it('village stars work in either order and the arch needs both', () => {
-    let s = finishPrologue('girl');
+  it('village stars work in either order, the arch needs both, and leaving is checkpoint ruby_entry', () => {
+    const s = finishPrologue('girl');
     expect(s.prologue.phase).toBe('complete');
     expect(s.location).toBe('rubyOrchard');
-    // only one star → prologue cannot complete
+    expect(checkpointIdOf(s)).toBe('ruby_entry');
     let t = P.finishOpening(newSave('girl'));
-    t = P.inspectBedroomObject(t, 'teddy').save;
-    t = P.inspectBedroomObject(t, 'crayons').save;
-    t = P.leaveBedroom(P.wakeBedroomStar(P.takeWonderbrush(t)));
+    t = P.leaveBedroom(P.takeWonderbrush(P.inspectBedroomObject(t, 'window').save));
     t = P.wakeVillageStar(t, 'pathStar');
     expect(P.completePrologue(t)).toBe(t);
+  });
+});
+
+describe('abilities (canon CC-01, provisional): Basic Dash free from the prologue, Flame Burst after Ruby', () => {
+  it('a new game has ZERO restored pigments but already has Basic Dash, for both heroes', () => {
+    for (const hero of ['girl', 'boy'] as const) {
+      const s = newSave(hero);
+      expect(Object.values(s.colors).some(Boolean)).toBe(false);
+      expect(P.hasAbility(s, 'basicDash')).toBe(true);
+      expect(P.hasAbility(s, 'flameBurst')).toBe(false);
+      expect(s.abilities).toEqual({ jump: true, basicDash: true, flameBurst: false });
+    }
+  });
+
+  it('Basic Dash is owned before the boss; Flame Burst only after the rescue', () => {
+    const atBoss = toRubyStage1();
+    expect(P.hasAbility(atBoss, 'basicDash')).toBe(true);
+    expect(P.hasAbility(atBoss, 'flameBurst')).toBe(false);
   });
 });
 
@@ -111,10 +136,10 @@ describe('Chapter 1: Ruby rescue', () => {
     const two = P.completeRubyStage(s, 2);
     expect(two.awarded).toBeNull();
     expect(two.save.colors.red).toBe(false);
-    expect(P.hasAbility(two.save, 'crimsonDash')).toBe(false);
+    expect(P.hasAbility(two.save, 'flameBurst')).toBe(false);
   });
 
-  it('Stage 3 awards Red exactly once and unlocks Crimson Dash; Blue and Yellow stay locked', () => {
+  it('Stage 3 awards Red exactly once and grants Flame Burst; Blue and Yellow stay locked', () => {
     let s = toRubyStage1();
     s = P.completeRubyStage(s, 1).save;
     s = P.completeRubyStage(s, 2).save;
@@ -123,7 +148,8 @@ describe('Chapter 1: Ruby rescue', () => {
     expect(three.save.colors.red).toBe(true);
     expect(three.save.colors.blue).toBe(false);
     expect(three.save.colors.yellow).toBe(false);
-    expect(P.hasAbility(three.save, 'crimsonDash')).toBe(true);
+    expect(P.hasAbility(three.save, 'flameBurst')).toBe(true);
+    expect(P.hasAbility(three.save, 'basicDash')).toBe(true);
     expect(P.hasAbility(three.save, 'bubbleGlide')).toBe(false);
     const again = P.completeRubyStage(three.save, 3);
     expect(again.accepted).toBe(false);

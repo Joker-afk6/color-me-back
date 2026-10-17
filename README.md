@@ -4,7 +4,7 @@ A gentle third-person 3D adventure for children ages 5–10. The colors have van
 
 **Play it in your browser:** https://joker-afk6.github.io/color-me-back/ (desktop browser with keyboard recommended).
 
-**This build is playable from the Prologue through the end of Chapter 1, The Ruby Orchard.** Chapters 2–4 are planned in [`docs/ROADMAP.md`](docs/ROADMAP.md) and are not built yet. The game says so honestly wherever they would appear.
+**This build is playable from the Prologue through the end of Chapter 1, The Ruby Orchard.** The Prologue (P00–P02) follows the new Chapter 1 Director Script. The Ruby Orchard is still the earlier alpha version and is being rebuilt to the Director Script step by step ([`DEVELOPMENT_PROGRESS.md`](DEVELOPMENT_PROGRESS.md), [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md)). Chapters 2–4 are planned in [`docs/ROADMAP.md`](docs/ROADMAP.md) and are not built yet. The game says so honestly wherever they would appear.
 
 Built with **TypeScript + Three.js r180 + Vite 6**. All 3D characters, places, music and sound effects are generated in code. No downloaded 3D models or audio files are used.
 
@@ -25,7 +25,7 @@ Then open **http://localhost:5310** in a desktop browser (tested in Chromium).
 |---|---|
 | `npm run dev` | Development server with hot reload (port 5310) |
 | `npm run check` | TypeScript type check (strict) |
-| `npm test` | 67 unit tests (progression rules, saves, puzzles, physics, level solvability) |
+| `npm test` | 82 unit tests (progression rules, saves + migration, puzzles, physics, level solvability) |
 | `npm run build` | Type check + production build into `dist/` |
 | `npm run preview` | Serve the production build (port 5311) |
 
@@ -38,24 +38,28 @@ The production build uses relative paths, so `dist/` works from any static web h
 | **W A S D** / arrow keys | Walk and run (camera-relative) |
 | **Space** | Jump (hold for a higher jump) |
 | **E** or **Enter** | Use the Wonderbrush: look, tap-paint, push. **Hold E** to sweep-paint |
-| **Shift** | Crimson Dash (after Red returns). Jump, then Shift, to dash across gaps |
+| **Shift** | Dash (free from the start). Jump, then Shift, to dash across gaps |
+| **F** | Flame Burst: granted by Ruby. **Not built yet** (Flame Courtyard, R09) |
 | Mouse drag · **Q** / **R** | Turn the camera · mouse wheel zooms · **C** puts the camera behind you |
 | **M** | Paint palette (mixing bowl) |
 | **H** | Ask Pip for a hint |
 | **Esc** / **P** | Pause: help, settings, sticker book, switch explorer, restart checkpoint, main menu |
 
-A gamepad (standard mapping) and on-screen touch controls are wired in but **not yet tested on real hardware**.
+A gamepad (standard mapping) and on-screen touch controls are wired in but **not tested on real hardware**, so they are not advertised in the game. This beta is for desktop keyboard and mouse.
 
 ## What's in this build
 
-* **Prologue:** a bedroom cinematic where the drawing's colors fly out the window, three inspectable details, Pip's entrance, and the Wonderbrush. Then Hush Hollow: two stars (one up a jump step) and the berry arch.
+* **Prologue (Director Script P00–P02):**
+  * Title and explorer choice.
+  * A bedroom cinematic; then the teddy, the crayons, and the window where Pip taps the glass. Pick up the old Wonderbrush (checkpoint).
+  * Hush Hollow: hop a little brook, practice the Dash on a courtyard stripe, wake two stars (one up a terrace), follow the berry stamps through the arch (checkpoint).
 * **Chapter 1, Ruby Orchard:**
   * Arrival cutscene.
   * The berry trail with two gaps.
   * Push-the-giant-berry puzzle that lowers a bridge.
   * Ruby's three-stage rescue: Bouncing Berry Parade, Mirror Berry Puzzle, Friendly Dragon Dance.
   * The **RED RETURNS** color wave.
-  * Crimson Dash and its tutorial.
+  * A dash test on berry pads (now reusing the free Dash).
   * Three hidden stickers, and the chapter-end card.
 * **Shared systems:**
   * Real collision and safe respawn.
@@ -68,7 +72,7 @@ A gamepad (standard mapping) and on-screen touch controls are wired in but **not
   * Optional read-aloud (browser speech).
   * Settings and accessibility options.
 
-All dialogue is taken word-for-word from the scripts in [`docs/design/`](docs/design/).
+All dialogue is taken word-for-word from the scripts. The Prologue uses the Chapter 1 Director Script (`docs/design/chapter1-beta/`); the Ruby Orchard still uses the earlier script (`docs/design/`). Story changes are tracked in [`docs/CANON_CHANGES.md`](docs/CANON_CHANGES.md). The pre-beta build is preserved at git tag `v0.2-chapter1-alpha`.
 
 ## Accessibility & safety
 
@@ -114,5 +118,5 @@ reference/      The original v0.1 starter code, preserved unchanged
 
 ## Developer notes
 
-* Progress status and next tasks: [`DEVELOPMENT_PROGRESS.md`](DEVELOPMENT_PROGRESS.md). What was verified, and how: [`docs/TEST_LOG.md`](docs/TEST_LOG.md).
+* Progress status and next tasks: [`DEVELOPMENT_PROGRESS.md`](DEVELOPMENT_PROGRESS.md). Open problems: [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md). Art status (nothing approved yet): [`VISUAL_ASSET_MANIFEST.md`](VISUAL_ASSET_MANIFEST.md). What was verified, and how: [`docs/TEST_LOG.md`](docs/TEST_LOG.md).
 * In dev builds (or with `?debug`), `window.__CMB__` exposes QA helpers. Examples: `snapshot()`, `step(seconds)` (fixed-step simulation), `hold([...codes], s)`, `tap(code)`, `teleport()`, `load(save)`.

@@ -1,5 +1,54 @@
 # Test log
 
+## Chapter 1 beta B1 (P00–P02): run on 2026-10-17
+
+Setup: macOS, Node 20.14.0, the Chromium browser pane of the Claude desktop app (pane **hidden**, so scripted scenes were advanced with `__CMB__.step()`; key input was real `KeyboardEvent`s), and the production build served statically.
+
+### Automated
+| Check | Result |
+|---|---|
+| `npm run check` | PASS, 0 errors |
+| `npm test` | **PASS, 82/82** (5 files; 15 new) |
+| `npm run build` | PASS. JS 274 KB (93 KB gzip) + Three.js 529 KB (135 KB gzip). No warnings. |
+| `npm audit` | 0 vulnerabilities |
+
+### Browser (dev server)
+| Flow | Method | Result |
+|---|---|---|
+| P00 title buttons | Read DOM | PASS: Start Adventure, Settings, How to Play, About. Continue appears only when a save exists. |
+| How to Play with no save | Click | PASS: opens, no crash. Lists Dash (Shift) as owned and Flame Burst (F) as "Rescue Ruby". No gamepad/touch claims. |
+| New game (Girl) | Click | PASS: zero pigments; abilities `{jump, basicDash: true, flameBurst: false}`; stored checkpoint `prologue_start` |
+| P01 opening cinematic | Stepped | PASS: Narrator line + "Wait... where did my red crayon go?" verbatim |
+| Skip opening (Esc) | Real key | PASS: valid `inspect` state, controls unlocked |
+| Teddy, crayons | Real E | PASS: verbatim lines; phase stays `inspect` (Pip does not come) |
+| Window | Real E | PASS: all 5 lines of the Pip exchange verbatim; phase → `wonderbrush` |
+| Resume via Continue mid-P01 | Real click | PASS after a fix: no fall/respawn during the 3.6 s load (previously "Whoops!" barks; see KNOWN_ISSUES) |
+| Wonderbrush assist | Stepped, measured | PASS: icon pulse at 20.0 s, Pip hint at 35.0 s |
+| Door before pickup | Focus check | PASS: not available |
+| Pickup | Real E | PASS: "Checkpoint saved" flash; stored `prologue_bedroom_complete`; door then works |
+| P02 arrival | Stepped | PASS: Pip's "Take a little step…" verbatim; HUD shows **Dash (Shift)** |
+| Walk | Real W | PASS |
+| Hop over the brook | Real W + Space | PASS: cleared; "Hop!" praise; `practiced: [jump]` saved |
+| Dash on the stripe | Real W + Shift | PASS: 5.4 m dash, white-gold trail, `practiced: [jump, dash]` saved |
+| First star | Real E | PASS: "That wasn't so hard!" + "Excellent! A real artist…" verbatim |
+| Terrace (Tutorial C) | Real W + Space ×2 | PASS: lands on the terrace (y = 1.1); star then reachable |
+| Second star + arch | Real E | PASS: "See those berry stamps…" verbatim; arch blocker removed |
+| Walk through the arch | Real W | PASS: stored `ruby_entry`, exit cutscene, Chapter 1 card, Ruby Orchard loads with no errors (not played further: out of scope) |
+| v0.2 save migration | Crafted v2 save + Continue | PASS: Boy, Hush Hollow, 1/2 stars, play time kept; v3 written; **v2 key byte-identical** |
+| Console | Read | PASS: no errors |
+| Production build | Static server | PASS: boots, no console errors, `__CMB__` absent |
+
+**Not verified in B1:**
+* The exit camera move was not captured in a screenshot.
+* Gray petals were not inspected visually.
+* Reduced-motion petal count.
+* Real touch, gamepad, Safari, Firefox.
+* Real-time (unthrottled) frame pacing.
+
+---
+
+## v0.2 (M2) record, unchanged below
+
 Everything below was actually run on 2026-10-16. The setup was macOS, Node 20.14.0, and the Chromium-based browser pane of the Claude desktop app. Where something was **not** tested, it says so.
 
 ## Automated

@@ -36,7 +36,7 @@ export const ORCH = {
   platformTop: 1.25,
   platformRadius: 1.75,
   // Pads are wide (6 m) and the gaps (5 m) are longer than a jump (~3.9 m) but comfortable for
-  // jump + Crimson Dash (~7–8 m), so the dash is needed and the landing is forgiving.
+  // jump + Dash (~7–8 m), so the dash is needed and the landing is forgiving.
   lane: { z: -32, halfZ: 3.2, groundX0: 13.5, groundX1: 26, pads: [[31, 37], [43, 49]] as Array<[number, number]>, endX: 51 },
   spawnLane: new THREE.Vector3(15.5, 0, -32),
   stickers: {

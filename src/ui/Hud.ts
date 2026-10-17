@@ -8,6 +8,9 @@ import type { AbilityId } from '../data/colors';
 import { $, el, escapeHtml } from './dom';
 import { ICON, SYMBOL_SVG, keycap } from './icons';
 
+/** White-gold accessibility glow for color-free effects (style guide token ui.symbol family). */
+export const NEUTRAL_GLOW = '#FFF1C9';
+
 export interface HudCallbacks {
   onPause: () => void;
   onPalette: () => void;
@@ -92,8 +95,9 @@ export class Hud {
     this.gems.setAttribute('aria-label', `${label}: ${freed} of ${total} crystals freed`);
   }
 
+  /** Shows only abilities that are owned AND actually built in this version (never a dead button). */
   setAbilities(owned: (a: AbilityId) => boolean, cooldown: Partial<Record<AbilityId, number>>): void {
-    const list = ABILITY_ORDER.filter(owned);
+    const list = ABILITY_ORDER.filter((a) => ABILITIES[a].built && owned(a));
     const key = list.join(',') + '|' + list.map((a) => Math.round((cooldown[a] ?? 0) * 20)).join(',');
     if (key === this.lastAbilities) return;
     this.lastAbilities = key;
@@ -106,10 +110,11 @@ export class Hud {
     for (const a of list) {
       const info = ABILITIES[a];
       const cd = Math.max(0, Math.min(1, cooldown[a] ?? 0));
-      const color = COLOR_INFO[info.color].hex;
+      // Color-free abilities (Basic Dash) use the accessible white-gold glow: red stays locked.
+      const color = info.color ? COLOR_INFO[info.color].hex : NEUTRAL_GLOW;
       const circ = 2 * Math.PI * 20;
       const node = el('div', { class: `ability ${cd > 0 ? 'cooling' : ''}`, title: info.howTo });
-      node.innerHTML = `<div class="ring"><svg viewBox="0 0 46 46"><circle cx="23" cy="23" r="20" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.3)" stroke-width="4"/><circle cx="23" cy="23" r="20" fill="none" stroke="${color}" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${circ * cd}"/></svg><div class="glyph" style="color:${color}">${a === 'crimsonDash' ? ICON.dash : SYMBOL_SVG[COLOR_INFO[info.color].symbol]}</div></div><span>${escapeHtml(info.name)} ${keycap(info.keyLabel)}</span>`;
+      node.innerHTML = `<div class="ring"><svg viewBox="0 0 46 46"><circle cx="23" cy="23" r="20" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.3)" stroke-width="4"/><circle cx="23" cy="23" r="20" fill="none" stroke="${color}" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${circ * cd}"/></svg><div class="glyph" style="color:${color}">${a === 'basicDash' || !info.color ? ICON.dash : SYMBOL_SVG[COLOR_INFO[info.color].symbol]}</div></div><span>${escapeHtml(info.name)} ${keycap(info.keyLabel)}</span>`;
       this.abilities.append(node);
     }
   }

@@ -22,14 +22,14 @@ import { Player } from '../gameplay/Player';
 import { Pip } from '../characters/Pip';
 import { MaterialLibrary } from '../rendering/paint';
 import { setOutlinesVisible } from '../rendering/outline';
-import { Hud } from '../ui/Hud';
+import { Hud, NEUTRAL_GLOW } from '../ui/Hud';
 import { Captions, DialogueBox, Toasts } from '../ui/Dialogue';
 import { Screens } from '../ui/Screens';
 import { TouchControls } from '../ui/TouchControls';
 import * as menus from '../ui/menus';
 import { $, el } from '../ui/dom';
 import { SPEAKERS, type Line } from '../data/speakers';
-import { COLOR_INFO, type GameColor, type PrimaryColor } from '../data/colors';
+import type { GameColor, PrimaryColor } from '../data/colors';
 import { CHAPTERS, LOCATION_NAMES, type LocationId } from '../data/chapters';
 import { EXPLORER_TUNING } from '../systems/CharacterMotor';
 import { PhysicsWorld } from '../systems/physics';
@@ -238,14 +238,16 @@ export class Game {
     level.tasks.update(dt);
     if (this.skipping) this.camera.finishShot();
 
-    if (playing && this.player) {
+    // While a level is loading the player may still stand in the old (or no) physics world:
+    // never simulate it then, or it could fall and trigger a respawn bark mid-fade.
+    if (playing && this.player && !this.changing) {
       const p = this.player;
       const locked = this.locked;
       const b = this.camera.basis();
       const mx = locked ? 0 : b.rx * this.input.move.x + b.fx * this.input.move.y;
       const mz = locked ? 0 : b.rz * this.input.move.x + b.fz * this.input.move.y;
       p.motor.frozen = locked;
-      p.motor.dashAllowed = hasAbility(this.save, 'crimsonDash');
+      p.motor.dashAllowed = hasAbility(this.save, 'basicDash');
       const events = p.update(dt, {
         moveX: mx,
         moveZ: mz,
@@ -306,7 +308,8 @@ export class Game {
           break;
         case 'dashStart':
           this.sfx('dash');
-          if (this.player) this.particles.sparkles(this.player.position.clone().setY(this.player.position.y + 0.8), { count: 16, color: COLOR_INFO.red.hex, speed: 2.5, life: 0.6, size: 0.35 });
+          // Basic Dash glow is white-gold: red stays locked until Ruby (Director Script P02).
+          if (this.player) this.particles.sparkles(this.player.position.clone().setY(this.player.position.y + 0.8), { count: 16, color: NEUTRAL_GLOW, speed: 2.5, life: 0.6, size: 0.35 });
           break;
         case 'hazard':
           void this.gentleRespawn(true);
@@ -321,7 +324,7 @@ export class Game {
     // Dash streak while dashing.
     if (this.player?.motor.dashActive) {
       const p = this.player.position;
-      this.particles.sparkles(new THREE.Vector3(p.x, p.y + 0.6 + Math.random() * 0.6, p.z), { count: 2, color: COLOR_INFO.red.hex, speed: 0.4, life: 0.45, size: 0.3, upward: 0 });
+      this.particles.sparkles(new THREE.Vector3(p.x, p.y + 0.6 + Math.random() * 0.6, p.z), { count: 2, color: NEUTRAL_GLOW, speed: 0.4, life: 0.45, size: 0.3, upward: 0 });
     }
   }
 
@@ -349,8 +352,11 @@ export class Game {
       this.hud.setColors(this.save.colors, (c) => this.restoration.isShown(c));
     }
     const cd = this.player.motor.dashCooldownLeft / EXPLORER_TUNING.dashCooldown;
-    // An ability appears once its color is visibly back in the world (after the cinematic).
-    this.hud.setAbilities((a) => hasAbility(this.save, a) && this.restoration.isShown(ABILITIES[a].color), { crimsonDash: cd });
+    // A color ability appears once its color is visibly back in the world (after the cinematic).
+    this.hud.setAbilities((a) => {
+      const color = ABILITIES[a].color;
+      return hasAbility(this.save, a) && (color === null || this.restoration.isShown(color));
+    }, { basicDash: cd });
     const f = this.interactions.focus;
     if (this.locked || !f) this.hud.setPrompt(null);
     else if (f.blocked) this.hud.setPrompt({ key: 'E', text: f.blockedText ?? 'Get a little closer!', blocked: true });
@@ -632,6 +638,7 @@ export class Game {
         else this.pickHero();
       },
       onSettings: () => this.openSettings(),
+      onHowToPlay: () => menus.openHelp(this.screens, (c) => s?.colors[c] === true),
       onAbout: () => menus.openAbout(this.screens),
       onToggleReadAloud: (on) => this.settingsStore.set('readAloud', on),
       onToggleSound: (on) => this.settingsStore.set('masterVolume', on ? this.soundRestore || 0.8 : 0),

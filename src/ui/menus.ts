@@ -37,6 +37,7 @@ export interface TitleCallbacks {
   onContinue: () => void;
   onNewGame: () => void;
   onSettings: () => void;
+  onHowToPlay: () => void;
   onAbout: () => void;
   onToggleReadAloud: (on: boolean) => void;
   onToggleSound: (on: boolean) => void;
@@ -55,9 +56,11 @@ export function openTitle(screens: Screens, cb: TitleCallbacks): void {
     logo.append(s);
   });
   const actions = el('div', { class: 'actions column' });
+  // Director Script P00: START ADVENTURE, CONTINUE (if a save exists), SETTINGS, HOW TO PLAY.
+  actions.append(button('Start Adventure', cb.onNewGame, { cls: cb.hasSave ? 'secondary' : '', autofocus: !cb.hasSave, html: `${ICON.brush} Start Adventure` }));
   if (cb.hasSave) actions.append(button(cb.continueLabel, cb.onContinue, { autofocus: true, html: `${ICON.star} ${escapeHtml(cb.continueLabel)}` }));
-  actions.append(button('New Adventure', cb.onNewGame, { cls: cb.hasSave ? 'secondary' : '', autofocus: !cb.hasSave, html: `${ICON.brush} New Adventure` }));
   actions.append(button('Settings', cb.onSettings, { cls: 'secondary' }));
+  actions.append(button('How to Play', cb.onHowToPlay, { cls: 'secondary' }));
   actions.append(button('About this game', cb.onAbout, { cls: 'secondary' }));
   const read = button('', () => {
     const on = read.getAttribute('aria-pressed') !== 'true';
@@ -270,10 +273,11 @@ export function openHelp(screens: Screens, owned: (c: GameColor) => boolean): vo
   add(keycap('Esc'), 'Pause, settings and help');
   const ab = (id: keyof typeof ABILITIES, guardian: string) => {
     const a = ABILITIES[id];
-    const have = owned(a.color);
+    const have = a.color === null || owned(a.color);
     add(keycap(a.keyLabel), `<b>${escapeHtml(a.name)}</b> — ${have ? escapeHtml(a.howTo) : `${ICON.lock} Rescue ${escapeHtml(guardian)} to unlock`}`, !have);
   };
-  ab('crimsonDash', 'Ruby');
+  ab('basicDash', '');
+  ab('flameBurst', 'Ruby');
   ab('bubbleGlide', 'Bloop (Chapter 2)');
   ab('sunbeam', 'Sol (Chapter 3)');
   screens.open(
@@ -281,7 +285,8 @@ export function openHelp(screens: Screens, owned: (c: GameColor) => boolean): vo
     panel(
       el('h2', {}, 'How to play'),
       t,
-      el('p', { class: 'hint' }, 'Gamepad: left stick move · A jump · X brush · B dash · Y palette · Start pause. Touch screens show on-screen buttons.'),
+      // Director Script §H / A-07: do not advertise controller or touch support before hardware testing.
+      el('p', { class: 'hint' }, 'This beta is made for a keyboard and mouse. Gamepad and touch controls are planned but not tested yet.'),
       el('p', { class: 'hint' }, 'You can never lose. If you slip or get bounced, you pop right back to safe ground.'),
       el('div', { class: 'actions' }, button('Got it!', () => screens.close('help'), { autofocus: true })),
     ),
@@ -568,7 +573,8 @@ export function openUnlockCard(screens: Screens, color: GameColor, onDone: () =>
     badge,
     el('p', { html: `New power: <b>${escapeHtml(ability.name)}</b> ${keycap(ability.keyLabel)}` }),
     el('p', {}, ability.howTo),
-    el('div', { class: 'actions' }, button('Let’s try it!', () => screens.close('unlock'), { autofocus: true })),
+    // Never invite the child to try a power that is not built yet (Flame Burst is R09).
+    el('div', { class: 'actions' }, button(ability.built ? 'Let’s try it!' : 'Hooray!', () => screens.close('unlock'), { autofocus: true })),
   );
   p.classList.add('unlock-card');
   screens.open({ id: 'unlock', label: `${info.label} restored. New power ${ability.name}`, onClose: onDone }, p);

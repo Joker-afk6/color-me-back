@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { newSave } from '../src/state/SaveData';
-import { SaveStore, SAVE_KEY, type StorageLike } from '../src/state/SaveStore';
+import { LEGACY_V2_KEY, SaveStore, SAVE_KEY, type StorageLike } from '../src/state/SaveStore';
 import { LEGACY_V1_KEY, validateSave } from '../src/state/validate';
 import { sanitizeSettings, SettingsStore } from '../src/state/Settings';
 
@@ -28,7 +28,7 @@ describe('save validation and repair', () => {
   it('garbage input yields a new adventure, not a crash', () => {
     for (const raw of [null, 42, 'x', [], { version: 9 }, { version: 2, ruby: 'nope' }]) {
       const r = validateSave(raw);
-      expect(r.save.version).toBe(2);
+      expect(r.save.version).toBe(3);
     }
   });
 
@@ -44,7 +44,7 @@ describe('save validation and repair', () => {
 
   it('Red cannot be owned without completing Ruby Stage 3', () => {
     const s = newSave('girl') as any;
-    s.prologue = { phase: 'complete', inspected: ['teddy', 'window'], hasWonderbrush: true, bedroomStarAwake: true, villageStars: ['pathStar', 'terraceStar'] };
+    s.prologue = { phase: 'complete', inspected: ['teddy', 'window'], hasWonderbrush: true, villageStars: ['pathStar', 'terraceStar'], practiced: [] };
     s.ruby.phase = 'stage2';
     s.colors.red = true;
     const r = validateSave(s);
@@ -53,7 +53,7 @@ describe('save validation and repair', () => {
 
   it('Red is implied once Stage 3 is complete', () => {
     const s = newSave('girl') as any;
-    s.prologue = { phase: 'complete', inspected: ['teddy', 'window'], hasWonderbrush: true, bedroomStarAwake: true, villageStars: ['pathStar', 'terraceStar'] };
+    s.prologue = { phase: 'complete', inspected: ['teddy', 'window'], hasWonderbrush: true, villageStars: ['pathStar', 'terraceStar'], practiced: [] };
     s.ruby.phase = 'dashTutorial';
     const r = validateSave(s);
     expect(r.save.colors.red).toBe(true);
@@ -75,7 +75,7 @@ describe('save validation and repair', () => {
 
   it('a prologue marked complete without both village stars returns to Hush Hollow', () => {
     const s = newSave('girl') as any;
-    s.prologue = { phase: 'complete', inspected: ['teddy', 'window'], hasWonderbrush: true, bedroomStarAwake: true, villageStars: ['pathStar'] };
+    s.prologue = { phase: 'complete', inspected: ['teddy', 'window'], hasWonderbrush: true, villageStars: ['pathStar'], practiced: [] };
     const r = validateSave(s);
     expect(r.save.prologue.phase).toBe('village');
     expect(r.save.location).toBe('hushHollow');
@@ -106,6 +106,13 @@ describe('SaveStore', () => {
     expect(JSON.parse(mem.getItem(SAVE_KEY)!).prologue.phase).toBe('opening');
   });
 
+  it('New Game also clears the v0.2 save', () => {
+    const mem = new MemoryStorage();
+    mem.setItem(LEGACY_V2_KEY, JSON.stringify(v2Save('village')));
+    new SaveStore(mem).reset('boy');
+    expect(mem.getItem(LEGACY_V2_KEY)).toBeNull();
+  });
+
   it('migrates a prototype v1 save by keeping only the explorer choice', () => {
     const mem = new MemoryStorage();
     mem.setItem(LEGACY_V1_KEY, JSON.stringify({ levelId: 'blue', gender: 'boy', restored: ['red', 'blue'], sigils: ['red-0'] }));
@@ -118,7 +125,7 @@ describe('SaveStore', () => {
   it('corrupt JSON does not throw', () => {
     const mem = new MemoryStorage();
     mem.setItem(SAVE_KEY, '{not json');
-    expect(new SaveStore(mem).load()?.save.version).toBe(2);
+    expect(new SaveStore(mem).load()?.save.version).toBe(3);
   });
 
   it('works with no storage at all (private mode)', () => {
@@ -146,5 +153,106 @@ describe('settings', () => {
     store.set('reducedMotion', true);
     expect(seen).toBe('reducedMotion');
     expect(new SettingsStore(mem).get().reducedMotion).toBe(true);
+  });
+});
+
+/** A save exactly as the v0.2 build (tag v0.2-chapter1-alpha) wrote it. */
+function v2Save(phase: 'wonderbrush' | 'village' | 'complete', ruby = 'arrive'): Record<string, unknown> {
+  return {
+    version: 2,
+    hero: 'boy',
+    location: phase === 'wonderbrush' ? 'bedroom' : phase === 'village' ? 'hushHollow' : 'rubyOrchard',
+    colors: { red: false, blue: false, yellow: false, purple: false, orange: false, green: false },
+    prologue: {
+      phase,
+      inspected: ['teddy', 'crayons'],
+      hasWonderbrush: true,
+      bedroomStarAwake: false,
+      villageStars: phase === 'complete' ? ['pathStar', 'terraceStar'] : ['pathStar'],
+    },
+    ruby: { phase: ruby, traversal: 'start', mirrors: [1, 1, 1], encounterIntroSeen: true },
+    collectibles: ['berrySticker2'],
+    playTimeSeconds: 321,
+    updatedAt: 5,
+  };
+}
+
+describe('save schema v3 and v0.2 migration (CC-04)', () => {
+  it('keeps every bit of v0.2 progress, even an old save that never inspected the window', () => {
+    const r = validateSave(v2Save('village'));
+    expect(r.migratedFrom).toBe(2);
+    expect(r.save.version).toBe(3);
+    expect(r.save.hero).toBe('boy');
+    expect(r.save.prologue.phase).toBe('village');
+    expect(r.save.prologue.villageStars).toEqual(['pathStar']);
+    expect(r.save.collectibles).toEqual(['berrySticker2']);
+    expect(r.save.playTimeSeconds).toBe(321);
+    expect('bedroomStarAwake' in r.save.prologue).toBe(false);
+    expect(r.save.abilities.basicDash).toBe(true);
+  });
+
+  it('a v0.2 save stuck before the old bedroom star counts as prologue_bedroom_complete', () => {
+    const r = validateSave(v2Save('wonderbrush'));
+    expect(r.save.prologue.phase).toBe('wonderbrush');
+    expect(r.save.prologue.hasWonderbrush).toBe(true);
+    expect(r.save.checkpointId).toBe('prologue_bedroom_complete');
+  });
+
+  it('a v0.2 save mid-rescue keeps its phase and mirrors; Red-era saves get Flame Burst', () => {
+    const mid = validateSave(v2Save('complete', 'stage2')).save;
+    expect(mid.ruby.phase).toBe('stage2');
+    expect(mid.ruby.mirrors).toEqual([1, 1, 1]);
+    expect(mid.abilities.flameBurst).toBe(false);
+    const after = validateSave(v2Save('complete', 'dashTutorial')).save;
+    expect(after.colors.red).toBe(true);
+    expect(after.abilities.flameBurst).toBe(true);
+    expect(after.checkpointId).toBe('ruby_restored');
+  });
+
+  it('loads the v0.2 key when no v3 save exists, writes v3, and never touches the v0.2 copy', () => {
+    const mem = new MemoryStorage();
+    const original = JSON.stringify(v2Save('village'));
+    mem.setItem(LEGACY_V2_KEY, original);
+    const store = new SaveStore(mem);
+    expect(store.hasSave()).toBe(true);
+    const r = store.load()!;
+    expect(r.migratedFrom).toBe(2);
+    store.write(r.save);
+    expect(mem.getItem(LEGACY_V2_KEY)).toBe(original);
+    const stored = JSON.parse(mem.getItem(SAVE_KEY)!);
+    expect(stored.version).toBe(3);
+    expect(stored.checkpointId).toBe('prologue_bedroom_complete');
+    // The v3 save now wins over the old key.
+    expect(store.load()!.migratedFrom).toBeNull();
+  });
+
+  it('stored ability flags and checkpoint names are never trusted (no early Flame Burst)', () => {
+    const s = newSave('girl') as any;
+    s.abilities = { jump: true, basicDash: true, flameBurst: true };
+    s.checkpointId = 'chapter_1_complete';
+    const r = validateSave(s);
+    expect(r.save.abilities.flameBurst).toBe(false);
+    expect(r.save.checkpointId).toBe('prologue_start');
+  });
+
+  it('a v3 save past Pip without the window inspection is repaired back to the bedroom step', () => {
+    const s = newSave('girl') as any;
+    s.prologue.phase = 'wonderbrush';
+    s.prologue.inspected = ['teddy', 'crayons'];
+    const r = validateSave(s);
+    expect(r.save.prologue.phase).toBe('inspect');
+  });
+
+  it('writes are idempotent: writing the same save twice stores the same progress', () => {
+    const mem = new MemoryStorage();
+    const store = new SaveStore(mem);
+    const s = validateSave(v2Save('complete', 'stage3')).save;
+    store.write(s);
+    const a = JSON.parse(mem.getItem(SAVE_KEY)!);
+    store.write(s);
+    const b = JSON.parse(mem.getItem(SAVE_KEY)!);
+    delete a.updatedAt;
+    delete b.updatedAt;
+    expect(b).toEqual(a);
   });
 });
